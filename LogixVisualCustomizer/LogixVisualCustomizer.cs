@@ -131,7 +131,7 @@ namespace LogixVisualCustomizer
         internal static float4 VerticalMiddleBorderBorders => Slices.GetVerticalMiddleBorders(BorderVerticalSlices);
         internal static Rect VerticalMiddleBorderRect => Slices.GetVerticalMiddleRect(BorderVerticalSlices, BorderHorizontalSlices);
 
-        public static string UserRandom { get; private set; }
+        public static string UserRandom { get; }
 
         static LogixVisualCustomizer()
         {
