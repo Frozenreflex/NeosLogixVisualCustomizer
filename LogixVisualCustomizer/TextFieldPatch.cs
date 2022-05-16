@@ -15,7 +15,7 @@ namespace LogixVisualCustomizer
 {
     internal static class TextFieldPatch
     {
-        private static readonly MethodInfo onGenerateVisualPatch = typeof(TextFieldPatch).GetMethod(nameof(TextFieldPatch.OnGenerateVisualPrefix), AccessTools.all);
+        private static readonly MethodInfo OnGenerateVisualPatch = typeof(TextFieldPatch).GetMethod(nameof(TextFieldPatch.OnGenerateVisualPrefix), AccessTools.all);
 
         public static void Patch(Harmony harmony)
         {
@@ -29,7 +29,7 @@ namespace LogixVisualCustomizer
                 var createdType = baseType.MakeGenericType(type);
                 var methodInfo = createdType.GetMethod("OnGenerateVisual", AccessTools.allDeclared);
 
-                harmony.Patch(methodInfo, new HarmonyMethod(onGenerateVisualPatch.MakeGenericMethod(type)));
+                harmony.Patch(methodInfo, new HarmonyMethod(OnGenerateVisualPatch.MakeGenericMethod(type)));
             }
         }
 
@@ -66,7 +66,7 @@ namespace LogixVisualCustomizer
             builder.Style.MinHeight = 32f;
             builder.Style.FlexibleWidth = 1f;
 
-            for (int i = 0; i < fields; i++)
+            for (var i = 0; i < fields; i++)
             {
                 traverse.Method("GenerateTextField", builder, i).GetValue();
             }

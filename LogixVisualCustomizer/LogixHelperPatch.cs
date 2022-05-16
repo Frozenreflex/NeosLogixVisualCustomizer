@@ -17,7 +17,7 @@ namespace LogixVisualCustomizer
         [HarmonyPatch(nameof(LogixHelper.GetConnectorSprite))]
         private static bool GetConnectorSpritePrefix(World world, int dimensions, bool isOutput, bool isImpulse, ref SpriteProvider __result)
         {
-            string key = $"LogixCustomizer_ConnectorSprite_{(isImpulse ? "Impulse" : "Value")}_{dimensions}_{(isOutput ? "Output" : "Input")}";
+            var key = $"LogixCustomizer_ConnectorSprite_{(isImpulse ? "Impulse" : "Value")}_{dimensions}_{(isOutput ? "Output" : "Input")}";
 
             __result = world.GetSharedComponentOrCreate(key, delegate (SpriteProvider sprite)
             {
@@ -37,7 +37,7 @@ namespace LogixVisualCustomizer
 
             __result = world.GetSharedComponentOrCreate(key, delegate (StaticTexture2D tex)
             {
-                tex.URL.Value = getConnectorUri(dimensions, isOutput, isImpulse);
+                tex.URL.Value = GetConnectorUri(dimensions, isOutput, isImpulse);
                 tex.FilterMode.Value = TextureFilterMode.Anisotropic;
 
                 if (isImpulse)
@@ -55,7 +55,7 @@ namespace LogixVisualCustomizer
             return false;
         }
 
-        private static Uri getConnectorUri(int dimensions, bool isOutput, bool isImpulse)
+        private static Uri GetConnectorUri(int dimensions, bool isOutput, bool isImpulse)
         {
             if (isImpulse)
                 return isOutput ? NeosAssets.Graphics.LogiX.Connectors.ImpulseOut : NeosAssets.Graphics.LogiX.Connectors.ImpulseIn;

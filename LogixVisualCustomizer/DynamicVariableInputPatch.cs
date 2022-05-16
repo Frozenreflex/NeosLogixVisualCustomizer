@@ -18,7 +18,7 @@ namespace LogixVisualCustomizer
         public static IEnumerable<MethodBase> TargetMethods()
         {
             return LogixVisualCustomizer.GenerateGenericMethodTargets(
-                LogixVisualCustomizer.neosPrimitiveAndEnumTypes,
+                LogixVisualCustomizer.NeosPrimitiveAndEnumTypes,
                 "OnGenerateVisual",
                 typeof(DynamicVariableInput<>));
         }

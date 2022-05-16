@@ -16,14 +16,14 @@ namespace LogixVisualCustomizer
     [HarmonyPatch]
     internal static class ButtonInputPatches
     {
-        private static readonly Type impulseInputType = typeof(ImpulseInput);
+        private static readonly Type ImpulseInputType = typeof(ImpulseInput);
 
         [HarmonyPostfix]
         private static void OnGenerateVisualPostfix(LogixNode __instance, Slot root)
         {
             var buttons = root.GetComponentsInChildren<Button>(LogixVisualCustomizer.ButtonFilter).ToArray();
 
-            if (__instance.GetType() == impulseInputType)
+            if (__instance.GetType() == ImpulseInputType)
             {
                 var inputBackground = root.GetFullInputBackgroundProvider();
                 var inputBorder = root.GetFullInputBorderProvider();
@@ -39,7 +39,7 @@ namespace LogixVisualCustomizer
         [HarmonyTargetMethods]
         private static IEnumerable<MethodBase> TargetMethods()
         {
-            return new[] { typeof(BoolInput), typeof(Bool2Input), typeof(Bool3Input), typeof(Bool4Input), impulseInputType }
+            return new[] { typeof(BoolInput), typeof(Bool2Input), typeof(Bool3Input), typeof(Bool4Input), ImpulseInputType }
                 .Select(t => t.GetMethod("OnGenerateVisual", AccessTools.allDeclared));
         }
     }

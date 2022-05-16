@@ -14,8 +14,8 @@ namespace LogixVisualCustomizer
     [HarmonyPatch(typeof(LogixNode))]
     internal static class LogixNodePatch
     {
-        private static readonly Type impulseRelayType = typeof(ImpulseRelay);
-        private static readonly Type valueRelayType = typeof(RelayNode<>);
+        private static readonly Type ImpulseRelayType = typeof(ImpulseRelay);
+        private static readonly Type ValueRelayType = typeof(RelayNode<>);
 
         [HarmonyPostfix]
         [HarmonyPatch("GenerateUI")]
@@ -34,7 +34,7 @@ namespace LogixVisualCustomizer
                 background.Tint.OverrideWith(SettingOverrides.NodeBackgroundColor);
 
             var type = __instance.GetType();
-            if (type == impulseRelayType || (type.IsGenericType && type.GetGenericTypeDefinition() == valueRelayType))
+            if (type == ImpulseRelayType || (type.IsGenericType && type.GetGenericTypeDefinition() == ValueRelayType))
                 return;
 
             var borderSlot = backgroundSlot.AddSlot("Border");

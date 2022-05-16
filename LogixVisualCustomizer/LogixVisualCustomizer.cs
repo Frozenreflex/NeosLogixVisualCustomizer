@@ -19,10 +19,10 @@ namespace LogixVisualCustomizer
 {
     public class LogixVisualCustomizer : NeosMod
     {
-        public static readonly Type[] neosPrimitiveAndEnumTypes;
-        public static readonly Type[] neosPrimitiveTypes;
+        public static readonly Type[] NeosPrimitiveAndEnumTypes;
+        public static readonly Type[] NeosPrimitiveTypes;
         public static ModConfiguration Config;
-        private static readonly float4 defaultSlices = new float4(0, 0, 1, 1);
+        private static readonly float4 DefaultSlices = new float4(0, 0, 1, 1);
 
         [AutoRegisterConfigKey]
         private static ModConfigurationKey<float4> BackgroundHorizontalSlicesKey = new ModConfigurationKey<float4>("BackgroundHorizontalSlices", "Positions for start and end of bottom, as well as top slices for the background sprite. Middle is implicit.", () => new float4(0, .5f, .5f, 1));
@@ -78,16 +78,16 @@ namespace LogixVisualCustomizer
         [AutoRegisterConfigKey]
         private static ModConfigurationKey<color> TextColorKey = new ModConfigurationKey<color>("TextColor", "Color of text on the Node.", () => new color(.95f));
 
-        public override string Author => "Banane9";
-        public override string Link => "https://github.com/Banane9/NeosLogixVisualCustomizer";
+        public override string Author => "Banane9, Frozenreflex";
+        public override string Link => "https://github.com/Frozenreflex/NeosLogixVisualCustomizer";
         public override string Name => "LogixVisualCustomizer";
         public override string Version => "1.0.0";
-        internal static float4 BackgroundHorizontalSlices => UseBackground ? Config.GetValue(BackgroundHorizontalSlicesKey) : defaultSlices;
+        internal static float4 BackgroundHorizontalSlices => UseBackground ? Config.GetValue(BackgroundHorizontalSlicesKey) : DefaultSlices;
         internal static Uri BackgroundSpriteUri => UseBackground ? new Uri(Config.GetValue(BackgroundSpriteUriKey)) : null;
-        internal static float4 BackgroundVerticalSlices => UseBackground ? Config.GetValue(BackgroundVerticalSlicesKey) : defaultSlices;
-        internal static float4 BorderHorizontalSlices => UseBorder ? Config.GetValue(BorderHorizontalSlicesKey) : defaultSlices;
+        internal static float4 BackgroundVerticalSlices => UseBackground ? Config.GetValue(BackgroundVerticalSlicesKey) : DefaultSlices;
+        internal static float4 BorderHorizontalSlices => UseBorder ? Config.GetValue(BorderHorizontalSlicesKey) : DefaultSlices;
         internal static Uri BorderSpriteUri => UseBorder ? new Uri(Config.GetValue(BorderSpriteUriKey)) : null;
-        internal static float4 BorderVerticalSlices => UseBorder ? Config.GetValue(BorderVerticalSlicesKey) : defaultSlices;
+        internal static float4 BorderVerticalSlices => UseBorder ? Config.GetValue(BorderVerticalSlicesKey) : DefaultSlices;
         internal static float4 BottomBackgroundBorders => Slices.GetBottomBorders(BackgroundVerticalSlices, BackgroundHorizontalSlices);
         internal static Rect BottomBackgroundRect => Slices.GetBottomRect(BackgroundVerticalSlices, BackgroundHorizontalSlices);
         internal static float4 BottomBorderBorders => Slices.GetBottomBorders(BorderVerticalSlices, BorderHorizontalSlices);
@@ -135,13 +135,13 @@ namespace LogixVisualCustomizer
         {
             var traverse = Traverse.Create(typeof(GenericTypes));
 
-            neosPrimitiveTypes = traverse.Field<Type[]>("neosPrimitives").Value
+            NeosPrimitiveTypes = traverse.Field<Type[]>("neosPrimitives").Value
                                     .Where(type => type.Name != "String")
                                     .AddItem(typeof(dummy))
                                     .AddItem(typeof(object))
                                     .ToArray();
 
-            neosPrimitiveAndEnumTypes = traverse.Field<Type[]>("neosPrimitivesAndEnums").Value
+            NeosPrimitiveAndEnumTypes = traverse.Field<Type[]>("neosPrimitivesAndEnums").Value
                                             .Where(type => type.Name != "String")
                                             .AddItem(typeof(dummy))
                                             .AddItem(typeof(object))
@@ -165,7 +165,7 @@ namespace LogixVisualCustomizer
             Config = GetConfiguration();
             Config.Save(true);
 
-            Harmony harmony = new Harmony($"{Author}.{Name}");
+            var harmony = new Harmony($"{Author}.{Name}");
             harmony.PatchAll();
             TextFieldPatch.Patch(harmony);
         }

@@ -19,9 +19,9 @@ namespace LogixVisualCustomizer
     [HarmonyPatch]
     internal static class DisplayPatches
     {
-        private static readonly Type colorType = typeof(Display_Color);
+        private static readonly Type ColorType = typeof(Display_Color);
 
-        private static void createAlphaRemovalLogix(Slot root, Sync<color> source, Sync<color> target)
+        private static void CreateAlphaRemovalLogix(Slot root, Sync<color> source, Sync<color> target)
         {
             var value = root.AttachComponent<FloatInput>();
             value.CurrentValue = 1;
@@ -42,7 +42,7 @@ namespace LogixVisualCustomizer
             root.ForeachComponentInChildren<Text>(VisualCustomizing.CustomizeDisplay);
 
             // Only create special display for color
-            if (type != colorType)
+            if (type != ColorType)
                 return;
 
             var colorDisplayRoot = root.GetComponentInChildren<HorizontalLayout>().Slot;
@@ -63,7 +63,7 @@ namespace LogixVisualCustomizer
             mask.Slot.GetComponent<Image>().Sprite.Target = root.GetFullInputBackgroundProvider();
 
             var noAlphaImage = builder.Image();
-            createAlphaRemovalLogix(noAlphaImage.Slot, alphaColorImage.Tint, noAlphaImage.Tint);
+            CreateAlphaRemovalLogix(noAlphaImage.Slot, alphaColorImage.Tint, noAlphaImage.Tint);
 
             var checkers = builder.Image(NeosAssets.Common.Backgrounds.TransparentLight64);
             alphaColorImage.Slot.Parent = checkers.Slot;

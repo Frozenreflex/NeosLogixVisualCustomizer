@@ -15,9 +15,9 @@ namespace LogixVisualCustomizer
     [HarmonyPatch(typeof(AudioClipInput))]
     internal static class AudioClipInputPatch
     {
-        private static readonly MethodInfo refEditorRemovePressed = typeof(RefEditor).GetMethod("RemovePressed", AccessTools.allDeclared);
+        private static readonly MethodInfo RefEditorRemovePressed = typeof(RefEditor).GetMethod("RemovePressed", AccessTools.allDeclared);
 
-        private static readonly MethodInfo refEditorSetReference = typeof(RefEditor).GetMethod("SetReference", AccessTools.allDeclared);
+        private static readonly MethodInfo RefEditorSetReference = typeof(RefEditor).GetMethod("SetReference", AccessTools.allDeclared);
 
         [HarmonyPrefix]
         [HarmonyPatch("Label", MethodType.Getter)]
@@ -41,8 +41,8 @@ namespace LogixVisualCustomizer
 
             var button = builder.Button("");
             button.Customize(root.GetFullInputBackgroundProvider(), root.GetFullInputBorderProvider());
-            button.Pressed.Target = AccessTools.MethodDelegate<ButtonEventHandler>(refEditorRemovePressed, refEditor);
-            button.Released.Target = AccessTools.MethodDelegate<ButtonEventHandler>(refEditorSetReference, refEditor);
+            button.Pressed.Target = AccessTools.MethodDelegate<ButtonEventHandler>(RefEditorRemovePressed, refEditor);
+            button.Released.Target = AccessTools.MethodDelegate<ButtonEventHandler>(RefEditorSetReference, refEditor);
 
             var padding = button.RectTransform;
             padding.OffsetMin.Value = new float2(4, 0);

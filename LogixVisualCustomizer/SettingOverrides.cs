@@ -17,23 +17,23 @@ namespace LogixVisualCustomizer
         public const string NodeBorderColor = "NodeBorderColor";
         public const string TextColor = "TextColor";
 
-        private static readonly Type colorType = typeof(color);
+        private static readonly Type ColorType = typeof(color);
 
         public static void OverrideWith<T>(this Sync<T> field, string setting)
         {
             field.GetMultiDriver(setting).Drives.Add().ForceLink(field);
         }
 
-        private static void ensureUserOverride<T>(this Sync<T> field, string setting)
+        private static void EnsureUserOverride<T>(this Sync<T> field, string setting)
         {
             var vuo = field.GetUserOverride(true);
 
-            vuo.Default.Value = setting.getDefault<T>();
+            vuo.Default.Value = setting.GetDefault<T>();
             vuo.CreateOverrideOnWrite.Value = true;
-            vuo.SetOverride(field.World.LocalUser, setting.getValue<T>());
+            vuo.SetOverride(field.World.LocalUser, setting.GetValue<T>());
         }
 
-        private static color getColor(this string setting)
+        private static color GetColor(this string setting)
         {
             switch (setting)
             {
@@ -46,15 +46,15 @@ namespace LogixVisualCustomizer
             }
         }
 
-        private static T getDefault<T>(this string setting)
+        private static T GetDefault<T>(this string setting)
         {
-            if (typeof(T) == colorType)
-                return (T)(object)setting.getDefaultColor();
+            if (typeof(T) == ColorType)
+                return (T)(object)setting.GetDefaultColor();
             else
                 return default;
         }
 
-        private static color getDefaultColor(this string setting)
+        private static color GetDefaultColor(this string setting)
         {
             switch (setting)
             {
@@ -73,29 +73,28 @@ namespace LogixVisualCustomizer
 
             if (field.World.KeyOwner(key) is ValueMultiDriver<T> multiDriver)
             {
-                multiDriver.Value.ensureUserOverride(setting);
-                multiDriver.trimDriveList();
+                multiDriver.Value.EnsureUserOverride(setting);
+                multiDriver.TrimDriveList();
 
                 return multiDriver;
             }
 
             multiDriver = field.Worker.GetCustomizerAssets().AttachComponent<ValueMultiDriver<T>>();
-            multiDriver.Value.ensureUserOverride(setting);
+            multiDriver.Value.EnsureUserOverride(setting);
 
             multiDriver.AssignKey(key);
 
             return multiDriver;
         }
 
-        private static T getValue<T>(this string setting)
+        private static T GetValue<T>(this string setting)
         {
-            if (typeof(T) == colorType)
-                return (T)(object)setting.getColor();
-            else
-                return default;
+            if (typeof(T) == ColorType)
+                return (T)(object)setting.GetColor();
+            return default;
         }
 
-        private static void trimDriveList<T>(this ValueMultiDriver<T> multiDriver)
+        private static void TrimDriveList<T>(this ValueMultiDriver<T> multiDriver)
         {
             multiDriver.Drives.RemoveAll(drive => drive.Target == null);
         }
