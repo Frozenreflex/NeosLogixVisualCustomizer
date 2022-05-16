@@ -78,7 +78,7 @@ namespace LogixVisualCustomizer
         [AutoRegisterConfigKey]
         private static ModConfigurationKey<color> TextColorKey = new ModConfigurationKey<color>("TextColor", "Color of text on the Node.", () => new color(.95f));
 
-        public override string Author => "Banane9, Frozenreflex";
+        public override string Author => "Banane9, Fro Zen";
         public override string Link => "https://github.com/Frozenreflex/NeosLogixVisualCustomizer";
         public override string Name => "LogixVisualCustomizer";
         public override string Version => "1.0.0";
@@ -131,6 +131,8 @@ namespace LogixVisualCustomizer
         internal static float4 VerticalMiddleBorderBorders => Slices.GetVerticalMiddleBorders(BorderVerticalSlices);
         internal static Rect VerticalMiddleBorderRect => Slices.GetVerticalMiddleRect(BorderVerticalSlices, BorderHorizontalSlices);
 
+        public static string UserHash { get; private set; }
+
         static LogixVisualCustomizer()
         {
             var traverse = Traverse.Create(typeof(GenericTypes));
@@ -146,19 +148,19 @@ namespace LogixVisualCustomizer
                                             .AddItem(typeof(dummy))
                                             .AddItem(typeof(object))
                                             .ToArray();
+
+            UserHash = "";
+            var rand = new Random();
+            for (var i = 0; i < 6; i++) UserHash += Convert.ToChar(rand.Next(26) + (rand.Next(2) == 0 ? 65 : 97));
+            Msg($"User Hash: {UserHash}");
         }
 
-        public static bool ButtonFilter(Button button)
-        {
-            return button.ColorDrivers.Count > 0;
-        }
+        public static bool ButtonFilter(Button button) => button.ColorDrivers.Count > 0;
 
-        public static IEnumerable<MethodBase> GenerateGenericMethodTargets(IEnumerable<Type> genericTypes, string methodName, params Type[] baseTypes)
-        {
-            return genericTypes
+        public static IEnumerable<MethodBase> GenerateGenericMethodTargets(IEnumerable<Type> genericTypes, string methodName, params Type[] baseTypes) =>
+            genericTypes
                 .SelectMany(type => baseTypes.Select(baseType => baseType.IsGenericTypeDefinition ? baseType.MakeGenericType(type) : baseType))
                 .Select(type => type.GetMethod(methodName, AccessTools.all));
-        }
 
         public override void OnEngineInit()
         {

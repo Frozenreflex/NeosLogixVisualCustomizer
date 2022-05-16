@@ -26,27 +26,26 @@ namespace LogixVisualCustomizer
             var background = backgroundSlot.GetComponent<Image>();
             background.Sprite.Target = root.GetNodeBackgroundProvider();
 
-            if (!__instance.Enabled)
-                background.Tint.Value = __instance.NodeErrorBackground.SetA(1);
+            if (!__instance.Enabled) background.Tint.Value = __instance.NodeErrorBackground.SetA(1);
             else if (__instance.NodeBackground != LogixNode.DEFAULT_NODE_BACKGROUND)
                 background.Tint.Value = __instance.NodeBackground.SetA(1);
-            else
-                background.Tint.OverrideWith(SettingOverrides.NodeBackgroundColor);
+            else background.Tint.OverrideWith(SettingOverrides.Settings.NodeBackgroundColor);
 
             var type = __instance.GetType();
-            if (type == ImpulseRelayType || (type.IsGenericType && type.GetGenericTypeDefinition() == ValueRelayType))
+            if (type == ImpulseRelayType || (type.IsGenericType && type.GetGenericTypeDefinition() == ValueRelayType)) 
                 return;
 
             var borderSlot = backgroundSlot.AddSlot("Border");
             borderSlot.OrderOffset = -1;
 
             var borderImage = borderSlot.AttachComponent<Image>();
-            borderImage.Tint.OverrideWith(SettingOverrides.NodeBorderColor);
+            borderImage.Tint.OverrideWith(SettingOverrides.Settings.NodeBorderColor);
             borderImage.Sprite.Target = root.GetNodeBorderProvider();
 
             backgroundSlot.ForeachComponentInChildren<Text>(VisualCustomizing.CustomizeLabel, cacheItems: true);
 
-            foreach (var connector in backgroundSlot.Children.Where(child => child.Name == "Image").Select(child => child.GetComponent<Image>()))
+            foreach (var connector in backgroundSlot.Children.Where(child => child.Name == "Image")
+                         .Select(child => child.GetComponent<Image>()))
                 connector.Tint.Value = connector.Tint.Value.SetA(1).AddValueHDR(.1f);
         }
     }

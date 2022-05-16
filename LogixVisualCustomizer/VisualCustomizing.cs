@@ -11,7 +11,7 @@ namespace LogixVisualCustomizer
 {
     internal static class VisualCustomizing
     {
-        public static Slot AddBorder(this Slot root, SpriteProvider sprite, string tintSetting, long orderOffset = -1)
+        public static Slot AddBorder(this Slot root, SpriteProvider sprite, SettingOverrides.Settings tintSetting, long orderOffset = -1)
         {
             var borderSlot = root.AddSlot("Border");
             borderSlot.OrderOffset = orderOffset;
@@ -25,7 +25,7 @@ namespace LogixVisualCustomizer
 
         public static void Customize(this Button button, SpriteProvider inputBackground, SpriteProvider inputBorder)
         {
-            button.BaseColor.OverrideWith(SettingOverrides.InputBackgroundColor);
+            button.BaseColor.OverrideWith(SettingOverrides.Settings.InputBackgroundColor);
             button.ColorDrivers[0].TintColorMode.Value = InteractionElement.ColorMode.Multiply;
 
             var buttonSlot = button.Slot;
@@ -33,10 +33,10 @@ namespace LogixVisualCustomizer
             var buttonImage = buttonSlot.GetComponent<Image>();
             buttonImage.Sprite.Target = inputBackground;
 
-            buttonSlot.AddBorder(inputBorder, SettingOverrides.InputBorderColor);
+            buttonSlot.AddBorder(inputBorder, SettingOverrides.Settings.InputBorderColor);
 
             var buttonText = buttonSlot.GetComponentInChildren<Text>();
-            buttonText.Color.OverrideWith(SettingOverrides.TextColor);
+            buttonText.Color.OverrideWith(SettingOverrides.Settings.TextColor);
 
             var textRect = buttonText.RectTransform;
             textRect.AnchorMin.Value = new float2(0.1f, 0.1f);
@@ -45,7 +45,7 @@ namespace LogixVisualCustomizer
 
         public static void CustomizeDisplay(this Text text)
         {
-            text.Color.OverrideWith(SettingOverrides.TextColor);
+            text.Color.OverrideWith(SettingOverrides.Settings.TextColor);
         }
 
         public static void CustomizeHorizontal(this Button[] buttons)
@@ -65,7 +65,7 @@ namespace LogixVisualCustomizer
             textPadding.AttachComponent<LayoutElement>();
             text.Slot.Parent = textPadding;
 
-            text.Color.OverrideWith(SettingOverrides.TextColor);
+            text.Color.OverrideWith(SettingOverrides.Settings.TextColor);
             text.RectTransform.OffsetMin.Value = new float2(8, 0);
             text.RectTransform.OffsetMax.Value = new float2(-8, 0);
         }

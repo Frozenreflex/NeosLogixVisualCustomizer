@@ -15,15 +15,17 @@ namespace LogixVisualCustomizer
     {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(LogixHelper.GetConnectorSprite))]
-        private static bool GetConnectorSpritePrefix(World world, int dimensions, bool isOutput, bool isImpulse, ref SpriteProvider __result)
+        private static bool GetConnectorSpritePrefix(World world, int dimensions, bool isOutput, bool isImpulse,
+            ref SpriteProvider __result)
         {
             var key = $"LogixCustomizer_ConnectorSprite_{(isImpulse ? "Impulse" : "Value")}_{dimensions}_{(isOutput ? "Output" : "Input")}";
 
             __result = world.GetSharedComponentOrCreate(key, delegate (SpriteProvider sprite)
             {
                 sprite.Texture.Target = LogixHelper.GetConnectorTexture(world, dimensions, isOutput, isImpulse);
-
-                sprite.Rect.Value = isImpulse || isOutput ? new Rect(0f, 0f, 1f, 1f) : new Rect(-1, 0, 1, 1);
+                sprite.Rect.Value = isImpulse || isOutput ? 
+                    new Rect(0f, 0f, 1f, 1f) : 
+                    new Rect(-1, 0, 1, 1);
             }, 1, false, false, world.GetCustomizerAssets);
 
             return false;
@@ -58,22 +60,19 @@ namespace LogixVisualCustomizer
         private static Uri GetConnectorUri(int dimensions, bool isOutput, bool isImpulse)
         {
             if (isImpulse)
-                return isOutput ? NeosAssets.Graphics.LogiX.Connectors.ImpulseOut : NeosAssets.Graphics.LogiX.Connectors.ImpulseIn;
-
+                return isOutput
+                    ? NeosAssets.Graphics.LogiX.Connectors.ImpulseOut
+                    : NeosAssets.Graphics.LogiX.Connectors.ImpulseIn;
             switch (dimensions)
             {
                 case 1:
                     return NeosAssets.Graphics.LogiX.Connectors.Value1D;
-
                 case 2:
                     return NeosAssets.Graphics.LogiX.Connectors.Value2D;
-
                 case 3:
                     return NeosAssets.Graphics.LogiX.Connectors.Value3D;
-
                 case 4:
                     return NeosAssets.Graphics.LogiX.Connectors.Value4D;
-
                 default:
                     throw new Exception("Invalid number of dimensions for value type");
             }

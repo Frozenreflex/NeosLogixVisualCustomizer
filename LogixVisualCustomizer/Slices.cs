@@ -11,7 +11,8 @@ namespace LogixVisualCustomizer
     {
         public static float4 GetBottomBorders(float4 verticalSlices, float4 horizontalSlices)
         {
-            return new float4(verticalSlices.GetFirstLength(verticalSlices.GetLength()), horizontalSlices.GetFirstLength(horizontalSlices.GetFirstHalfLength()),
+            return new float4(verticalSlices.GetFirstLength(verticalSlices.GetLength()),
+                    horizontalSlices.GetFirstLength(horizontalSlices.GetFirstHalfLength()),
                               verticalSlices.GetSecondLength(verticalSlices.GetLength()), 0)
                        .FilterZero();
         }
@@ -39,8 +40,10 @@ namespace LogixVisualCustomizer
 
         public static float4 GetFullBorders(float4 verticalSlices, float4 horizontalSlices)
         {
-            return new float4(verticalSlices.GetFirstLength(verticalSlices.GetLength()), horizontalSlices.GetFirstLength(horizontalSlices.GetLength()),
-                              verticalSlices.GetSecondLength(verticalSlices.GetLength()), horizontalSlices.GetSecondLength(horizontalSlices.GetLength()))
+            return new float4(verticalSlices.GetFirstLength(verticalSlices.GetLength()),
+                    horizontalSlices.GetFirstLength(horizontalSlices.GetLength()),
+                              verticalSlices.GetSecondLength(verticalSlices.GetLength()),
+                    horizontalSlices.GetSecondLength(horizontalSlices.GetLength()))
                        .FilterZero();
         }
 
@@ -67,7 +70,8 @@ namespace LogixVisualCustomizer
 
         public static float4 GetLeftBorders(float4 verticalSlices, float4 horizontalSlices)
         {
-            return new float4(verticalSlices.GetFirstLength(verticalSlices.GetFirstHalfLength()), horizontalSlices.GetFirstLength(horizontalSlices.GetLength()),
+            return new float4(verticalSlices.GetFirstLength(verticalSlices.GetFirstHalfLength()),
+                    horizontalSlices.GetFirstLength(horizontalSlices.GetLength()),
                               0, horizontalSlices.GetSecondLength(horizontalSlices.GetLength()))
                        .FilterZero();
         }
@@ -91,7 +95,8 @@ namespace LogixVisualCustomizer
         public static float4 GetRightBorders(float4 verticalSlices, float4 horizontalSlices)
         {
             return new float4(0, horizontalSlices.GetFirstLength(horizontalSlices.GetLength()),
-                              verticalSlices.GetSecondLength(verticalSlices.GetSecondHalfLength()), horizontalSlices.GetSecondLength(horizontalSlices.GetLength()))
+                              verticalSlices.GetSecondLength(verticalSlices.GetSecondHalfLength()),
+                              horizontalSlices.GetSecondLength(horizontalSlices.GetLength()))
                        .FilterZero();
         }
 
@@ -115,7 +120,8 @@ namespace LogixVisualCustomizer
         public static float4 GetTopBorders(float4 verticalSlices, float4 horizontalSlices)
         {
             return new float4(verticalSlices.GetFirstLength(verticalSlices.GetLength()), 0,
-                              verticalSlices.GetSecondLength(verticalSlices.GetLength()), horizontalSlices.GetSecondLength(horizontalSlices.GetSecondHalfLength()))
+                              verticalSlices.GetSecondLength(verticalSlices.GetLength()),
+                              horizontalSlices.GetSecondLength(horizontalSlices.GetSecondHalfLength()))
                        .FilterZero();
         }
 
@@ -138,6 +144,7 @@ namespace LogixVisualCustomizer
             return new Rect(verticleSlices[0], horizontalSlices.GetMiddle(), verticleSlices.GetLength(), 0);
         }
 
-        private static float4 FilterZero(this float4 borders) => borders == float4.Zero ? new float4(.5f, .5f, .5f, .5f) : borders;
+        private static float4 FilterZero(this float4 borders) =>
+            borders == float4.Zero ? new float4(.5f, .5f, .5f, .5f) : borders;
     }
 }
