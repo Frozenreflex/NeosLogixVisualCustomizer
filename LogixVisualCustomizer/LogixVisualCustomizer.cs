@@ -131,7 +131,7 @@ namespace LogixVisualCustomizer
         internal static float4 VerticalMiddleBorderBorders => Slices.GetVerticalMiddleBorders(BorderVerticalSlices);
         internal static Rect VerticalMiddleBorderRect => Slices.GetVerticalMiddleRect(BorderVerticalSlices, BorderHorizontalSlices);
 
-        public static string UserHash { get; private set; }
+        public static string UserRandom { get; private set; }
 
         static LogixVisualCustomizer()
         {
@@ -149,10 +149,10 @@ namespace LogixVisualCustomizer
                                             .AddItem(typeof(object))
                                             .ToArray();
 
-            UserHash = "";
+            UserRandom = "";
             var rand = new Random();
-            for (var i = 0; i < 6; i++) UserHash += Convert.ToChar(rand.Next(26) + (rand.Next(2) == 0 ? 65 : 97));
-            Msg($"User Hash: {UserHash}");
+            for (var i = 0; i < 6; i++) UserRandom += Convert.ToChar(rand.Next(26) + (rand.Next(2) == 0 ? 65 : 97));
+            Msg($"Random string: {UserRandom}");
         }
 
         public static bool ButtonFilter(Button button) => button.ColorDrivers.Count > 0;

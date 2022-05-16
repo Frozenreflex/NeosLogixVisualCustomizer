@@ -65,7 +65,7 @@ namespace LogixVisualCustomizer
 
         public static Slot GetCustomizerAssets(this World world)
         {
-            var key = $"LogixCustomizerAssets_{LogixVisualCustomizer.UserHash}";
+            var key = $"LogixCustomizerAssets_{LogixVisualCustomizer.UserRandom}";
 
             if (world.AssetsSlot.Find(key) is Slot slot)
                 return slot;
@@ -374,11 +374,10 @@ namespace LogixVisualCustomizer
 
         private static SpriteProvider GetOrCreateSpriteProvider(this World world, string key, IAssetProvider<ITexture2D> texture, Rect localRect, float4 localBorders, float localScale)
         {
-            key = $"LogixCustomizer_{LogixVisualCustomizer.UserHash}_{key}";
+            key = $"{LogixVisualCustomizer.UserRandom}_{key}";
             if (world.KeyOwner(key) is SpriteProvider sprite)
             {
                 //sprite.EnsureSettings(texture, localRect, localBorders, localScale);
-
                 return sprite;
             }
 
@@ -398,7 +397,7 @@ namespace LogixVisualCustomizer
 
         private static StaticTexture2D GetOrCreateTexture(this World world, string key, bool useDefault, Uri source)
         {
-            key = $"LogixCustomizer_{LogixVisualCustomizer.UserHash}_{key}";
+            key = $"LogixCustomizer_{LogixVisualCustomizer.UserRandom}_{key}";
             if (world.KeyOwner(key) is StaticTexture2D texture) return texture;
 
             texture = world.GetCustomizerAssets().AttachComponent<StaticTexture2D>();
