@@ -170,6 +170,7 @@ namespace LogixVisualCustomizer
             var harmony = new Harmony($"{Author}.{Name}");
             harmony.PatchAll();
             TextFieldPatch.Patch(harmony);
+            EnumInputPatch.Patch(harmony);
         }
     }
 }
