@@ -160,9 +160,11 @@ namespace LogixVisualCustomizer
 
         public static bool ButtonFilter(Button button) => button.ColorDrivers.Count > 0;
 
-        public static IEnumerable<MethodBase> GenerateGenericMethodTargets(IEnumerable<Type> genericTypes, string methodName, params Type[] baseTypes) =>
+        public static IEnumerable<MethodBase> GenerateGenericMethodTargets(IEnumerable<Type> genericTypes,
+            string methodName, params Type[] baseTypes) =>
             genericTypes
-                .SelectMany(type => baseTypes.Select(baseType => baseType.IsGenericTypeDefinition ? baseType.MakeGenericType(type) : baseType))
+                .SelectMany(type => baseTypes.Select(baseType =>
+                    baseType.IsGenericTypeDefinition ? baseType.MakeGenericType(type) : baseType))
                 .Select(type => type.GetMethod(methodName, AccessTools.all));
 
         public override void OnEngineInit()

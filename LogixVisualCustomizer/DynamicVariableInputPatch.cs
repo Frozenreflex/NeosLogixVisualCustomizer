@@ -17,13 +17,14 @@ namespace LogixVisualCustomizer
     // Also add null button for variable name
     internal static class DynamicVariableInputPatch
     {
+        /*
         [HarmonyPatch]
         internal static class Label
         {
             [HarmonyPrefix]
             private static bool LabelGetterPrefix(LogixNode __instance, ref string __result)
             {
-                __result = $"Dynamic {__instance.GetType().GenericTypeArguments[0].GetNiceName("<", ">")} Variable";
+                __result = $"Dynamic {__instance.GetType().GenericTypeArguments[0].GetNiceName()} Variable";
 
                 return false;
             }
@@ -37,6 +38,7 @@ namespace LogixVisualCustomizer
                     typeof(DynamicVariableInput<>));
             }
         }
+        */
 
         [HarmonyPatch]
         internal static class OnGenerateVisual
@@ -53,6 +55,8 @@ namespace LogixVisualCustomizer
                 editor.Field<RelayRef<IField>>("_target").Value.Target = instance.Field<Sync<string>>("_variableName").Value;
 
                 var builder = (UIBuilder)instance.Method("GenerateUI", root, 384f, 76f).GetValue();
+
+                builder.Text($"Dynamic {__instance.GetType().GenericTypeArguments[0].GetNiceName()} Variable").CustomizeDisplay();
 
                 root.GetComponentInChildren<LayoutElement>().FlexibleHeight.Value = 1;
 
