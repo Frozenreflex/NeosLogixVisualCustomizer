@@ -13,8 +13,7 @@ using System.Threading.Tasks;
 
 namespace LogixVisualCustomizer
 {
-    // Have to reimplement the label on the node, as the generic type stamping from patching otherwise has every reference type labeled as object
-    // Also add null button for variable name
+    //Dynamic Variable Inputs do not use labels.
     internal static class DynamicVariableInputPatch
     {
         /*
