@@ -80,10 +80,7 @@ namespace LogixVisualCustomizer
 
         public static float GetSecondHalfLength(this float4 slices) => slices[3] - slices.GetMiddle();
 
-        public static float GetSecondLength(this float4 slices, float factor = 1)
-        {
-            return (slices[3] - slices[2]) / factor;
-        }
+        public static float GetSecondLength(this float4 slices, float factor = 1) => (slices[3] - slices[2]) / factor;
 
         public static float4 GetTopBorders(float4 verticalSlices, float4 horizontalSlices)
         {
@@ -107,10 +104,7 @@ namespace LogixVisualCustomizer
                        .FilterZero();
         }
 
-        public static Rect GetVerticalMiddleRect(float4 verticleSlices, float4 horizontalSlices)
-        {
-            return new Rect(verticleSlices[0], horizontalSlices.GetMiddle(), verticleSlices.GetLength(), 0);
-        }
+        public static Rect GetVerticalMiddleRect(float4 verticleSlices, float4 horizontalSlices) => new Rect(verticleSlices[0], horizontalSlices.GetMiddle(), verticleSlices.GetLength(), 0);
 
         private static float4 FilterZero(this float4 borders) =>
             borders == float4.Zero ? new float4(.5f, .5f, .5f, .5f) : borders;

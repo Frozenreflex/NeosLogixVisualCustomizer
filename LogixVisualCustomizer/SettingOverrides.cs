@@ -19,7 +19,7 @@ namespace LogixVisualCustomizer
             NodeBorderColor,
             TextColor
         }
-        private static readonly Type ColorType = typeof(color);
+        //private static readonly Type ColorType = typeof(color);
         public static void OverrideWith<T>(this Sync<T> field, Settings setting)
         {
             if (typeof(T) != typeof(color)) return;

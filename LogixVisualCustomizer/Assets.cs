@@ -21,9 +21,11 @@ namespace LogixVisualCustomizer
             return world.GetOrCreateTexture(key, !LogixVisualCustomizer.UseBackground, LogixVisualCustomizer.BackgroundSpriteUri);
         }
 
-        public static IAssetProvider<ITexture2D> GetBackgroundTexture(this Worker worker) => worker.World.GetBackgroundTexture();
+        public static IAssetProvider<ITexture2D> GetBackgroundTexture(this Worker worker) =>
+            worker.World.GetBackgroundTexture();
 
-        public static IAssetProvider<ITexture2D> GetBorderTexture(this Worker worker) => worker.World.GetBorderTexture();
+        public static IAssetProvider<ITexture2D> GetBorderTexture(this Worker worker) =>
+            worker.World.GetBorderTexture();
 
         public static IAssetProvider<ITexture2D> GetBorderTexture(this World world)
         {
@@ -32,19 +34,20 @@ namespace LogixVisualCustomizer
             return world.GetOrCreateTexture(key, !LogixVisualCustomizer.UseBorder, LogixVisualCustomizer.BorderSpriteUri);
         }
 
-        public static SpriteProvider GetBottomInputBackgroundProvider(this Worker worker)
-        {
-            return worker.World.GetBottomInputBackgroundProvider();
-        }
-
+        public static SpriteProvider GetBottomInputBackgroundProvider(this Worker worker) =>
+            worker.World.GetBottomInputBackgroundProvider();
         public static SpriteProvider GetBottomInputBackgroundProvider(this World world)
         {
             const string key = "BottomInputBackground_SpriteProvider";
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBackgroundTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundRect : LogixVisualCustomizer.BottomBackgroundRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundBorders : LogixVisualCustomizer.BottomBackgroundBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundRect
+                    : LogixVisualCustomizer.BottomBackgroundRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundBorders
+                    : LogixVisualCustomizer.BottomBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
         }
 
@@ -56,8 +59,12 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBorderTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderRect : LogixVisualCustomizer.BottomBorderRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderBorders : LogixVisualCustomizer.BottomBorderBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderRect
+                    : LogixVisualCustomizer.BottomBorderRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderBorders
+                    : LogixVisualCustomizer.BottomBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
         }
 
@@ -76,7 +83,8 @@ namespace LogixVisualCustomizer
             return slot;
         }
 
-        public static SpriteProvider GetFullInputBackgroundProvider(this Worker worker) => worker.World.GetFullInputBackgroundProvider();
+        public static SpriteProvider GetFullInputBackgroundProvider(this Worker worker) =>
+            worker.World.GetFullInputBackgroundProvider();
 
         public static SpriteProvider GetFullInputBackgroundProvider(this World world)
         {
@@ -89,7 +97,8 @@ namespace LogixVisualCustomizer
                 LogixVisualCustomizer.InputBackgroundScale);
         }
 
-        public static SpriteProvider GetFullInputBorderProvider(this Worker worker) => worker.World.GetFullInputBorderProvider();
+        public static SpriteProvider GetFullInputBorderProvider(this Worker worker) =>
+            worker.World.GetFullInputBorderProvider();
 
         public static SpriteProvider GetFullInputBorderProvider(this World world)
         {
@@ -139,8 +148,12 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBackgroundTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundRect : LogixVisualCustomizer.HorizontalMiddleBackgroundRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundBorders : LogixVisualCustomizer.HorizontalMiddleBackgroundBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundRect
+                    : LogixVisualCustomizer.HorizontalMiddleBackgroundRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundBorders
+                    : LogixVisualCustomizer.HorizontalMiddleBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
         }
 
@@ -156,8 +169,12 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBorderTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderRect : LogixVisualCustomizer.HorizontalMiddleBorderRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderBorders : LogixVisualCustomizer.HorizontalMiddleBorderBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderRect
+                    : LogixVisualCustomizer.HorizontalMiddleBorderRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderBorders
+                    : LogixVisualCustomizer.HorizontalMiddleBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
         }
 
@@ -170,8 +187,12 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBackgroundTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundRect : LogixVisualCustomizer.LeftBackgroundRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundBorders : LogixVisualCustomizer.LeftBackgroundBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundRect
+                    : LogixVisualCustomizer.LeftBackgroundRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundBorders
+                    : LogixVisualCustomizer.LeftBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
         }
 
@@ -184,8 +205,12 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBorderTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderRect : LogixVisualCustomizer.LeftBorderRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderBorders : LogixVisualCustomizer.LeftBorderBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderRect
+                    : LogixVisualCustomizer.LeftBorderRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderBorders
+                    : LogixVisualCustomizer.LeftBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
         }
 
@@ -198,7 +223,7 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBackgroundTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundRect : LogixVisualCustomizer.FullBackgroundRect,
+                LogixVisualCustomizer.FullBackgroundRect,
                 LogixVisualCustomizer.FullBackgroundBorders,
                 LogixVisualCustomizer.NodeBackgroundScale);
         }
@@ -211,7 +236,7 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBorderTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderRect : LogixVisualCustomizer.FullBorderRect,
+                LogixVisualCustomizer.FullBorderRect,
                 LogixVisualCustomizer.FullBorderBorders,
                 LogixVisualCustomizer.NodeBackgroundScale);
         }
@@ -225,8 +250,12 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBackgroundTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundRect : LogixVisualCustomizer.RightBackgroundRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundBorders : LogixVisualCustomizer.RightBackgroundBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundRect
+                    : LogixVisualCustomizer.RightBackgroundRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundBorders
+                    : LogixVisualCustomizer.RightBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
         }
 
@@ -239,8 +268,12 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBorderTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderRect : LogixVisualCustomizer.RightBorderRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderBorders : LogixVisualCustomizer.RightBorderBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderRect
+                    : LogixVisualCustomizer.RightBorderRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderBorders
+                    : LogixVisualCustomizer.RightBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
         }
 
@@ -253,8 +286,12 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBackgroundTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundRect : LogixVisualCustomizer.TopBackgroundRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundBorders : LogixVisualCustomizer.TopBackgroundBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundRect
+                    : LogixVisualCustomizer.TopBackgroundRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundBorders
+                    : LogixVisualCustomizer.TopBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
         }
 
@@ -267,8 +304,12 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBorderTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderRect : LogixVisualCustomizer.TopBorderRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderBorders : LogixVisualCustomizer.TopBorderBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderRect
+                    : LogixVisualCustomizer.TopBorderRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderBorders
+                    : LogixVisualCustomizer.TopBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
         }
 
@@ -276,7 +317,8 @@ namespace LogixVisualCustomizer
             out SpriteProvider inputBackground, out SpriteProvider inputBorder) =>
             worker.World.GetVerticalInputProviders(index, inputs, out inputBackground, out inputBorder);
 
-        public static void GetVerticalInputProviders(this World world, int index, int total, out SpriteProvider inputBackground, out SpriteProvider inputBorder)
+        public static void GetVerticalInputProviders(this World world, int index, int total,
+            out SpriteProvider inputBackground, out SpriteProvider inputBorder)
         {
             if (index == 0)
             {
@@ -312,8 +354,12 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBackgroundTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundRect : LogixVisualCustomizer.VerticalMiddleBackgroundRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBackgroundBorders : LogixVisualCustomizer.VerticalMiddleBackgroundBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundRect
+                    : LogixVisualCustomizer.VerticalMiddleBackgroundRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBackgroundBorders
+                    : LogixVisualCustomizer.VerticalMiddleBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
         }
 
@@ -326,8 +372,12 @@ namespace LogixVisualCustomizer
 
             return world.GetOrCreateSpriteProvider(key,
                 world.GetBorderTexture(),
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderRect : LogixVisualCustomizer.VerticalMiddleBorderRect,
-                LogixVisualCustomizer.IndividualInputs ? LogixVisualCustomizer.FullBorderBorders : LogixVisualCustomizer.VerticalMiddleBorderBorders,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderRect
+                    : LogixVisualCustomizer.VerticalMiddleBorderRect,
+                LogixVisualCustomizer.IndividualInputs
+                    ? LogixVisualCustomizer.FullBorderBorders
+                    : LogixVisualCustomizer.VerticalMiddleBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
         }
 
