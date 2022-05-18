@@ -21,6 +21,9 @@ namespace LogixVisualCustomizer
     {
         public static readonly Type[] NeosPrimitiveAndEnumTypes;
         public static readonly Type[] NeosPrimitiveTypes;
+        public static readonly MethodInfo PrimitiveMemberEditorOnReset = typeof(PrimitiveMemberEditor).GetMethod("OnReset", AccessTools.allDeclared);
+        public static readonly MethodInfo RefEditorRemovePressed = typeof(RefEditor).GetMethod("RemovePressed", AccessTools.allDeclared);
+        public static readonly MethodInfo RefEditorSetReference = typeof(RefEditor).GetMethod("SetReference", AccessTools.allDeclared);
         public static ModConfiguration Config;
         private static readonly float4 DefaultSlices = new float4(0, 0, 1, 1);
 
