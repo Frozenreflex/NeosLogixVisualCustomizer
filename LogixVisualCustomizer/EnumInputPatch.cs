@@ -15,11 +15,13 @@ namespace LogixVisualCustomizer
 {
     internal static class EnumInputPatch
     {
-        private static readonly MethodInfo OnGenerateVisualPatch = typeof(EnumInputPatch).GetMethod(nameof(OnGenerateVisualPostfix), AccessTools.all);
+        private static readonly MethodInfo OnGenerateVisualPatch =
+            typeof(EnumInputPatch).GetMethod(nameof(OnGenerateVisualPostfix), AccessTools.all);
         public static void Patch(Harmony harmony)
         {
             var baseType = typeof(EnumInput<>);
-            var genericTypes = Traverse.Create(typeof(GenericTypes)).Field<Type[]>("commonEnums").Value
+            var genericTypes = Traverse.Create(typeof(GenericTypes))
+                .Field<Type[]>("commonEnums").Value
                 .Append(typeof(AudioRolloffMode));
             foreach (var type in genericTypes)
                 harmony.Patch(baseType.MakeGenericType(type).GetMethod("OnGenerateVisual",

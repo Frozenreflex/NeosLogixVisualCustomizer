@@ -1,4 +1,5 @@
-﻿using BaseX;
+﻿/*
+using BaseX;
 using FrooxEngine;
 using FrooxEngine.LogiX;
 using System;
@@ -19,7 +20,7 @@ namespace LogixVisualCustomizer
             NodeBorderColor,
             TextColor
         }
-        //private static readonly Type ColorType = typeof(color);
+        //this class now does nothing
         public static void OverrideWith<T>(this Sync<T> field, Settings setting)
         {
             if (typeof(T) != typeof(color)) return;
@@ -49,3 +50,4 @@ namespace LogixVisualCustomizer
         }
     }
 }
+*/

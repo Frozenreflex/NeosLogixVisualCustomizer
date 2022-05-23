@@ -1,6 +1,7 @@
 ﻿using BaseX;
 using FrooxEngine;
 using FrooxEngine.LogiX;
+using NeosModLoader;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +12,11 @@ namespace LogixVisualCustomizer
 {
     internal static class Assets
     {
-        private const TextureFilterMode DefaultFilterMode = TextureFilterMode.Point;
-        private static readonly Uri DefaultUri = new Uri("neosdb:///c58b6a6570f385c8ca45895b3ecd530a14d2fd77a5c8f54b579ff79f9204419a.webp");
-
         public static IAssetProvider<ITexture2D> GetBackgroundTexture(this World world)
         {
             const string key = "CustomBackground_Texture";
 
-            return world.GetOrCreateTexture(key, !LogixVisualCustomizer.UseBackground, LogixVisualCustomizer.BackgroundSpriteUri);
+            return world.GetOrCreateTexture(key, LogixVisualCustomizer.BackgroundSpriteUriKey, LogixVisualCustomizer.BackgroundSpriteFilterKey);
         }
 
         public static IAssetProvider<ITexture2D> GetBackgroundTexture(this Worker worker) =>
@@ -31,7 +29,7 @@ namespace LogixVisualCustomizer
         {
             const string key = "CustomBorder_Texture";
 
-            return world.GetOrCreateTexture(key, !LogixVisualCustomizer.UseBorder, LogixVisualCustomizer.BorderSpriteUri);
+            return world.GetOrCreateTexture(key, LogixVisualCustomizer.BorderSpriteUriKey, LogixVisualCustomizer.BorderSpriteFilterKey);
         }
 
         public static SpriteProvider GetBottomInputBackgroundProvider(this Worker worker) =>
@@ -408,20 +406,6 @@ namespace LogixVisualCustomizer
             */
         }
 
-        private static void EnsureSettings(this StaticTexture2D texture, Uri source, bool useDefault)
-        {
-            texture.WrapModeU.Value = TextureWrapMode.Clamp;
-            texture.WrapModeV.Value = TextureWrapMode.Clamp;
-            texture.FilterMode.Value = useDefault ? DefaultFilterMode : TextureFilterMode.Anisotropic;
-            texture.URL.Value = useDefault ? DefaultUri : source;
-            /*
-            var urlOverride = texture.URL.GetUserOverride(true);
-            urlOverride.CreateOverrideOnWrite.Value = true;
-            urlOverride.Default.Value = DefaultUri;
-            urlOverride.SetOverride(texture.World.LocalUser, useDefault ? DefaultUri : source);
-            */
-        }
-
         private static SpriteProvider GetOrCreateSpriteProvider(this World world, string key, IAssetProvider<ITexture2D> texture, Rect localRect, float4 localBorders, float localScale)
         {
             key = $"{LogixVisualCustomizer.UserRandom}_{key}";
@@ -445,14 +429,16 @@ namespace LogixVisualCustomizer
             return sprite;
         }
 
-        private static StaticTexture2D GetOrCreateTexture(this World world, string key, bool useDefault, Uri source)
+        private static StaticTexture2D GetOrCreateTexture(this World world, string key, ModConfigurationKey<Uri> uriConfigurationKey, ModConfigurationKey<TextureFilterMode> filterConfigurationKey)
         {
             key = $"LogixCustomizer_{LogixVisualCustomizer.UserRandom}_{key}";
             if (world.KeyOwner(key) is StaticTexture2D texture) return texture;
 
             texture = world.GetCustomizerAssets().AttachComponent<StaticTexture2D>();
-            texture.EnsureSettings(source, useDefault);
-            //texture.DestroyWhenDestroyed(texture.URL.GetUserOverride());
+            texture.URL.DriveFromSharedSetting(uriConfigurationKey, LogixVisualCustomizer.Config);
+            texture.FilterMode.DriveFromSharedSetting(filterConfigurationKey, LogixVisualCustomizer.Config);
+            texture.WrapModeU.Value = TextureWrapMode.Clamp;
+            texture.WrapModeV.Value = TextureWrapMode.Clamp;
             texture.AssignKey(key);
 
             return texture;
