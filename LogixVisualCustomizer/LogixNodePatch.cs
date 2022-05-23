@@ -1,6 +1,7 @@
 ﻿using BaseX;
 using FrooxEngine;
 using FrooxEngine.LogiX;
+using FrooxEngine.LogiX.Cast;
 using FrooxEngine.UIX;
 using HarmonyLib;
 using System;
@@ -14,7 +15,6 @@ namespace LogixVisualCustomizer
     [HarmonyPatch(typeof(LogixNode))]
     internal static class LogixNodePatch
     {
-        private static readonly Type ImpulseRelayType = typeof(ImpulseRelay);
         private static readonly Type ValueRelayType = typeof(RelayNode<>);
 
         [HarmonyPostfix]
@@ -22,9 +22,10 @@ namespace LogixVisualCustomizer
         private static void GenerateUIPostfix(LogixNode __instance, Slot root)
         {
             var backgroundSlot = root.FindInChildren("Image");
-
             var background = backgroundSlot.GetComponent<Image>();
-            background.Sprite.Target = root.GetNodeBackgroundProvider();
+
+            foreach (var connector in backgroundSlot.Children.Where(child => child.Name == "Image").Select(child => child.GetComponent<Image>()))
+                connector.Tint.Value = connector.Tint.Value.SetA(1).AddValueHDR(.1f);
 
             if (!__instance.Enabled) background.Tint.Value = __instance.NodeErrorBackground.SetA(1);
             else if (__instance.NodeBackground != LogixNode.DEFAULT_NODE_BACKGROUND)
@@ -32,8 +33,10 @@ namespace LogixVisualCustomizer
             else background.Tint.OverrideWith(SettingOverrides.Settings.NodeBackgroundColor);
 
             var type = __instance.GetType();
-            if (type == ImpulseRelayType || (type.IsGenericType && type.GetGenericTypeDefinition() == ValueRelayType)) 
+            if (__instance is ImpulseRelay || __instance is ICastNode || (type.IsGenericType && type.GetGenericTypeDefinition() == ValueRelayType))
                 return;
+
+            background.Sprite.Target = root.GetNodeBackgroundProvider();
 
             var borderSlot = backgroundSlot.AddSlot("Border");
             borderSlot.OrderOffset = -1;
@@ -43,10 +46,6 @@ namespace LogixVisualCustomizer
             borderImage.Sprite.Target = root.GetNodeBorderProvider();
 
             backgroundSlot.ForeachComponentInChildren<Text>(VisualCustomizing.CustomizeLabel, cacheItems: true);
-
-            foreach (var connector in backgroundSlot.Children.Where(child => child.Name == "Image")
-                         .Select(child => child.GetComponent<Image>()))
-                connector.Tint.Value = connector.Tint.Value.SetA(1).AddValueHDR(.1f);
         }
     }
 }
