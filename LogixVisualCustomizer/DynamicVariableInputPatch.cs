@@ -16,29 +16,6 @@ namespace LogixVisualCustomizer
     //Dynamic Variable Inputs do not use labels.
     internal static class DynamicVariableInputPatch
     {
-        /*
-        [HarmonyPatch]
-        internal static class Label
-        {
-            [HarmonyPrefix]
-            private static bool LabelGetterPrefix(LogixNode __instance, ref string __result)
-            {
-                __result = $"Dynamic {__instance.GetType().GenericTypeArguments[0].GetNiceName()} Variable";
-
-                return false;
-            }
-
-            [HarmonyTargetMethods]
-            private static IEnumerable<MethodBase> TargetMethods()
-            {
-                return LogixVisualCustomizer.GenerateGenericMethodTargets(
-                    LogixVisualCustomizer.NeosPrimitiveAndEnumTypes,
-                    "get_Label",
-                    typeof(DynamicVariableInput<>));
-            }
-        }
-        */
-
         [HarmonyPatch]
         internal static class OnGenerateVisual
         {
@@ -51,11 +28,13 @@ namespace LogixVisualCustomizer
                 memberEditor.Continuous.Value = true;
 
                 var editor = Traverse.Create(memberEditor);
-                editor.Field<RelayRef<IField>>("_target").Value.Target = instance.Field<Sync<string>>("_variableName").Value;
+                editor.Field<RelayRef<IField>>("_target").Value.Target =
+                    instance.Field<Sync<string>>("_variableName").Value;
 
                 var builder = (UIBuilder)instance.Method("GenerateUI", root, 384f, 76f).GetValue();
 
-                builder.Text($"Dynamic {__instance.GetType().GenericTypeArguments[0].GetNiceName()} Variable").CustomizeDisplay();
+                builder.Text($"Dynamic {__instance.GetType().GenericTypeArguments[0].GetNiceName()} Variable")
+                    .CustomizeDisplay();
 
                 root.GetComponentInChildren<LayoutElement>().FlexibleHeight.Value = 1;
 
@@ -70,7 +49,9 @@ namespace LogixVisualCustomizer
                 horizontal.ForceExpandWidth.Value = false;
 
                 builder.Style.MinWidth = 32;
-                var nullButton = builder.Button("∅", AccessTools.MethodDelegate<ButtonEventHandler>(LogixVisualCustomizer.PrimitiveMemberEditorOnReset, memberEditor));
+                var nullButton = builder.Button("∅",
+                    AccessTools.MethodDelegate<ButtonEventHandler>(LogixVisualCustomizer.PrimitiveMemberEditorOnReset,
+                        memberEditor));
                 editor.Field<SyncRef<Button>>("_resetButton").Value.Target = nullButton;
 
                 builder.Style.FlexibleWidth = 1;

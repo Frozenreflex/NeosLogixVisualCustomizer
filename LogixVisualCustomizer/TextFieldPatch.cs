@@ -15,22 +15,24 @@ namespace LogixVisualCustomizer
 {
     internal static class TextFieldPatch
     {
-        private static readonly MethodInfo onGenerateVisualPatch = typeof(TextFieldPatch).GetMethod(nameof(TextFieldPatch.OnGenerateVisualPrefix), AccessTools.all);
-        private static readonly Dictionary<Type, MethodInfo> onSetNullMethods = new Dictionary<Type, MethodInfo>();
-        private static readonly Type textFieldNodeBaseType = typeof(TextFieldNodeBase<>);
+        private static readonly MethodInfo OnGenerateVisualPatch =
+            typeof(TextFieldPatch).GetMethod(nameof(OnGenerateVisualPrefix), AccessTools.all);
+        private static readonly Dictionary<Type, MethodInfo> OnSetNullMethods = new Dictionary<Type, MethodInfo>();
+        private static readonly Type TextFieldNodeBaseType = typeof(TextFieldNodeBase<>);
 
         public static void Patch(Harmony harmony)
         {
-            var genericTypes = Traverse.Create(typeof(GenericTypes)).Field<Type[]>("neosPrimitives").Value
+            var genericTypes = 
+                Traverse.Create(typeof(GenericTypes)).Field<Type[]>("neosPrimitives").Value
                 .Where(type => type.Name != "String")
                 .AddItem(typeof(object));
 
             foreach (var type in genericTypes)
             {
-                var createdType = textFieldNodeBaseType.MakeGenericType(type);
+                var createdType = TextFieldNodeBaseType.MakeGenericType(type);
                 var methodInfo = createdType.GetMethod("OnGenerateVisual", AccessTools.allDeclared);
 
-                harmony.Patch(methodInfo, new HarmonyMethod(onGenerateVisualPatch.MakeGenericMethod(type)));
+                harmony.Patch(methodInfo, new HarmonyMethod(OnGenerateVisualPatch.MakeGenericMethod(type)));
             }
         }
 
@@ -44,10 +46,14 @@ namespace LogixVisualCustomizer
             var minWidth = traverse.Property<float>("MinWidth").Value;
             var fields = traverse.Property<int>("Fields").Value;
 
-            var builder = (UIBuilder)traverse.Method("GenerateUI", root, minWidth, 4f * (fields + 1) + 32f * fields).GetValue();
+            var builder = (UIBuilder) traverse.Method("GenerateUI", root, 
+                    minWidth, 4f * (fields + 1) + 32f * fields).GetValue();
 
-            var inputBackground = leftNull ? root.GetLeftInputBackgroundProvider() : root.GetHorizontalMiddleInputBackgroundProvider();
-            var inputBorder = leftNull ? root.GetLeftInputBorderProvider() : root.GetHorizontalMiddleInputBorderProvider();
+            var inputBackground = leftNull
+                ? root.GetLeftInputBackgroundProvider()
+                : root.GetHorizontalMiddleInputBackgroundProvider();
+            var inputBorder =
+                leftNull ? root.GetLeftInputBorderProvider() : root.GetHorizontalMiddleInputBorderProvider();
 
             if (traverse.Property<bool>("NullButton").Value)
             {
@@ -81,13 +87,13 @@ namespace LogixVisualCustomizer
         {
             var type = instance.GetType();
 
-            if (!onSetNullMethods.TryGetValue(type, out var method))
+            if (!OnSetNullMethods.TryGetValue(type, out var method))
             {
-                while (!type.IsGenericType || type.GetGenericTypeDefinition() != textFieldNodeBaseType)
+                while (!type.IsGenericType || type.GetGenericTypeDefinition() != TextFieldNodeBaseType)
                     type = type.BaseType;
 
                 method = type.GetMethod("OnSetNull", AccessTools.allDeclared);
-                onSetNullMethods.Add(instance.GetType(), method);
+                OnSetNullMethods.Add(instance.GetType(), method);
             }
 
             return AccessTools.MethodDelegate<ButtonEventHandler>(method, instance);

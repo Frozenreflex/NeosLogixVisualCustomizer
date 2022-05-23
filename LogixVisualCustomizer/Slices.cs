@@ -25,14 +25,12 @@ namespace LogixVisualCustomizer
 
         public static float GetFirstLength(this float4 slices, float factor = 1) => (slices[1] - slices[0]) / factor;
 
-        public static float4 GetFullBorders(float4 verticalSlices, float4 horizontalSlices)
-        {
-            return new float4(verticalSlices.GetFirstLength(verticalSlices.GetLength()),
+        public static float4 GetFullBorders(float4 verticalSlices, float4 horizontalSlices) =>
+            new float4(verticalSlices.GetFirstLength(verticalSlices.GetLength()),
                     horizontalSlices.GetFirstLength(horizontalSlices.GetLength()),
-                              verticalSlices.GetSecondLength(verticalSlices.GetLength()),
+                    verticalSlices.GetSecondLength(verticalSlices.GetLength()),
                     horizontalSlices.GetSecondLength(horizontalSlices.GetLength()))
-                       .FilterZero();
-        }
+                .FilterZero();
 
         public static Rect GetFullRect(float4 verticalSlices, float4 horizontalSlices) =>
             new Rect(verticalSlices[0], horizontalSlices[0],
@@ -75,36 +73,35 @@ namespace LogixVisualCustomizer
         {
             var vMiddle = verticalSlices.GetMiddle();
 
-            return new Rect(vMiddle, horizontalSlices[0], verticalSlices[3] - vMiddle, horizontalSlices.GetLength());
+            return new Rect(vMiddle, horizontalSlices[0], verticalSlices[3] - vMiddle, 
+                horizontalSlices.GetLength());
         }
 
         public static float GetSecondHalfLength(this float4 slices) => slices[3] - slices.GetMiddle();
 
         public static float GetSecondLength(this float4 slices, float factor = 1) => (slices[3] - slices[2]) / factor;
 
-        public static float4 GetTopBorders(float4 verticalSlices, float4 horizontalSlices)
-        {
-            return new float4(verticalSlices.GetFirstLength(verticalSlices.GetLength()), 0,
-                              verticalSlices.GetSecondLength(verticalSlices.GetLength()),
-                              horizontalSlices.GetSecondLength(horizontalSlices.GetSecondHalfLength()))
-                       .FilterZero();
-        }
+        public static float4 GetTopBorders(float4 verticalSlices, float4 horizontalSlices) =>
+            new float4(verticalSlices.GetFirstLength(verticalSlices.GetLength()), 0,
+                    verticalSlices.GetSecondLength(verticalSlices.GetLength()),
+                    horizontalSlices.GetSecondLength(horizontalSlices.GetSecondHalfLength()))
+                .FilterZero();
 
         public static Rect GetTopRect(float4 verticalSlices, float4 horizontalSlices)
         {
             var hMiddle = horizontalSlices.GetMiddle();
 
-            return new Rect(verticalSlices[0], hMiddle, verticalSlices.GetLength(), horizontalSlices[3] - hMiddle);
+            return new Rect(verticalSlices[0], hMiddle, verticalSlices.GetLength(), 
+                horizontalSlices[3] - hMiddle);
         }
 
-        public static float4 GetVerticalMiddleBorders(this float4 verticalSlices)
-        {
-            return new float4(verticalSlices.GetFirstLength(verticalSlices.GetLength()), 0,
-                              verticalSlices.GetSecondLength(verticalSlices.GetLength()), 0)
-                       .FilterZero();
-        }
+        public static float4 GetVerticalMiddleBorders(this float4 verticalSlices) =>
+            new float4(verticalSlices.GetFirstLength(verticalSlices.GetLength()), 0,
+                    verticalSlices.GetSecondLength(verticalSlices.GetLength()), 0)
+                .FilterZero();
 
-        public static Rect GetVerticalMiddleRect(float4 verticleSlices, float4 horizontalSlices) => new Rect(verticleSlices[0], horizontalSlices.GetMiddle(), verticleSlices.GetLength(), 0);
+        public static Rect GetVerticalMiddleRect(float4 verticleSlices, float4 horizontalSlices) =>
+            new Rect(verticleSlices[0], horizontalSlices.GetMiddle(), verticleSlices.GetLength(), 0);
 
         private static float4 FilterZero(this float4 borders) =>
             borders == float4.Zero ? new float4(.5f, .5f, .5f, .5f) : borders;

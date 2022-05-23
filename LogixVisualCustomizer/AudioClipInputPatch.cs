@@ -20,7 +20,6 @@ namespace LogixVisualCustomizer
         private static bool LabelGetterPrefix(ref string __result)
         {
             __result = "Audio Clip";
-
             return false;
         }
 
@@ -28,7 +27,8 @@ namespace LogixVisualCustomizer
         [HarmonyPatch("OnGenerateVisual")]
         private static bool OnGenerateVisualPrefix(AudioClipInput __instance, Slot root, AssetRef<AudioClip> ___Clip)
         {
-            var builder = (UIBuilder)Traverse.Create(__instance).Method("GenerateUI", root, 128, 72).GetValue();
+            var builder = (UIBuilder)Traverse.Create(__instance)
+                .Method("GenerateUI", root, 128, 72).GetValue();
 
             var refEditor = root.AttachComponent<RefEditor>();
             var editor = Traverse.Create(refEditor);
@@ -37,15 +37,18 @@ namespace LogixVisualCustomizer
 
             var button = builder.Button("");
             button.Customize(root.GetFullInputBackgroundProvider(), root.GetFullInputBorderProvider());
-            button.Pressed.Target = AccessTools.MethodDelegate<ButtonEventHandler>(LogixVisualCustomizer.RefEditorRemovePressed, refEditor);
-            button.Released.Target = AccessTools.MethodDelegate<ButtonEventHandler>(LogixVisualCustomizer.RefEditorSetReference, refEditor);
+            button.Pressed.Target =
+                AccessTools.MethodDelegate<ButtonEventHandler>(LogixVisualCustomizer.RefEditorRemovePressed, refEditor);
+            button.Released.Target =
+                AccessTools.MethodDelegate<ButtonEventHandler>(LogixVisualCustomizer.RefEditorSetReference, refEditor);
 
             var padding = button.RectTransform;
             padding.OffsetMin.Value = new float2(4, 0);
             padding.OffsetMax.Value = new float2(-4, 0);
 
             editor.Field<RelayRef<ISyncRef>>("_targetRef").Value.Target = ___Clip;
-            editor.Field<FieldDrive<string>>("_textDrive").Value.Target = button.Slot.GetComponentInChildren<Text>().Content;
+            editor.Field<FieldDrive<string>>("_textDrive").Value.Target =
+                button.Slot.GetComponentInChildren<Text>().Content;
 
             return false;
         }
