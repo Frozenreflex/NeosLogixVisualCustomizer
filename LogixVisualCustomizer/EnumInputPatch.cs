@@ -22,7 +22,9 @@ namespace LogixVisualCustomizer
             var baseType = typeof(EnumInput<>);
             var genericTypes = Traverse.Create(typeof(GenericTypes))
                 .Field<Type[]>("commonEnums").Value
-                .Append(typeof(AudioRolloffMode));
+                .Append(typeof(AudioRolloffMode))
+                .Append(typeof(AudioDistanceSpace))
+                .Append(typeof(AudioTypeGroup));
             foreach (var type in genericTypes)
                 harmony.Patch(baseType.MakeGenericType(type).GetMethod("OnGenerateVisual",
                         AccessTools.allDeclared),
