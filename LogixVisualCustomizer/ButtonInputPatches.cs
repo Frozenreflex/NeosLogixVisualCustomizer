@@ -32,7 +32,6 @@ namespace LogixVisualCustomizer
 
                 return;
             }
-
             buttons.CustomizeVertical();
         }
 

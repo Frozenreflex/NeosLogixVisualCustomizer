@@ -32,7 +32,6 @@ namespace LogixVisualCustomizer
                     instance.Field<Sync<string>>("_variableName").Value;
 
                 var builder = (UIBuilder)instance.Method("GenerateUI", root, 384f, 76f).GetValue();
-
                 builder.Text($"Dynamic {__instance.GetType().GenericTypeArguments[0].GetNiceName()} Variable")
                     .CustomizeDisplay();
 
