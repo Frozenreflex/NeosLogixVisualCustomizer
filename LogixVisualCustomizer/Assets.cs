@@ -1,34 +1,54 @@
 ﻿using BaseX;
 using FrooxEngine;
-using FrooxEngine.LogiX;
 using NeosModLoader;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LogixVisualCustomizer
 {
+    internal enum TextureAssetKey
+    {
+        BackgroundTexture,
+        BorderTexture,
+    }
+
+    internal enum SpriteAssetKey
+    {
+        BottomInputBackground,
+        BottomInputBorder,
+        FullInputBackground,
+        FullInputBorder,
+        HorizontalMiddleBackground,
+        HorizontalMiddleBorder,
+        LeftInputBackground,
+        LeftInputBorder,
+        NodeBackground,
+        NodeBorder,
+        RightInputBackground,
+        RightInputBorder,
+        TopInputBackground,
+        TopInputBorder,
+        VerticalMiddleBackground,
+        VerticalMiddleBorder
+    }
     internal static class Assets
     {
-        public static IAssetProvider<ITexture2D> GetBackgroundTexture(this World world)
-        {
-            const string key = "CustomBackground_Texture";
+        private static World LastWorld;
+        private static ReferenceMultiplexer<IAssetProvider<ITexture2D>> LastTextures;
+        private static ReferenceMultiplexer<SpriteProvider> LastSprites;
+        private static Dictionary<string, string> UserHash = new Dictionary<string, string>();
+        public static IAssetProvider<ITexture2D> GetBackgroundTexture(this World world) => world.GetOrCreateTexture(
+            TextureAssetKey.BackgroundTexture, LogixVisualCustomizer.BackgroundSpriteUriKey,
+            LogixVisualCustomizer.BackgroundSpriteFilterKey);
 
-            return world.GetOrCreateTexture(key, LogixVisualCustomizer.BackgroundSpriteUriKey, LogixVisualCustomizer.BackgroundSpriteFilterKey);
-        }
-        public static IAssetProvider<ITexture2D> GetBorderTexture(this World world)
-        {
-            const string key = "CustomBorder_Texture";
+        public static IAssetProvider<ITexture2D> GetBorderTexture(this World world) => world.GetOrCreateTexture(
+            TextureAssetKey.BorderTexture, LogixVisualCustomizer.BorderSpriteUriKey,
+            LogixVisualCustomizer.BorderSpriteFilterKey);
 
-            return world.GetOrCreateTexture(key, LogixVisualCustomizer.BorderSpriteUriKey, LogixVisualCustomizer.BorderSpriteFilterKey);
-        }
-        public static SpriteProvider GetBottomInputBackgroundProvider(this World world)
-        {
-            const string key = "BottomInputBackground_SpriteProvider";
-
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetBottomInputBackgroundProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.BottomInputBackground,
                 world.GetBackgroundTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBackgroundRect
@@ -37,12 +57,9 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBackgroundBorders
                     : LogixVisualCustomizer.BottomBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
-        }
-        public static SpriteProvider GetBottomInputBorderProvider(this World world)
-        {
-            const string key = "BottomInputBorder_SpriteProvider";
 
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetBottomInputBorderProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.BottomInputBorder,
                 world.GetBorderTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBorderRect
@@ -51,45 +68,51 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBorderBorders
                     : LogixVisualCustomizer.BottomBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
-        }
+
         public static Slot GetCustomizerAssets(this World world)
         {
-            var key = $"LogixCustomizerAssets_{LogixVisualCustomizer.UserRandom}";
-
+            var user = world.LocalUser.UserID;
+            if (!UserHash.TryGetValue(world.LocalUser.UserID, out var hash))
+            {
+                //this doesn't need to be completely cryptographically secure or anything like that,
+                //but blatantly showing the userID does feel kinda wrong to me
+                hash = BitConverter.ToString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(user)))
+                    .Replace("-", string.Empty).Substring(0, 8);
+                //cache the hash so we don't compute a new one every time
+                UserHash.Add(user, hash);
+            }
+            var key = $"LogixCustomizerAssets_{hash}";
+            
             if (world.AssetsSlot.Find(key) is Slot slot)
                 return slot;
 
             slot = world.AssetsSlot.AddSlot(key);
             slot.AttachComponent<AssetOptimizationBlock>();
-
+            slot.AttachComponent<ReferenceMultiplexer<IAssetProvider<ITexture2D>>>().References
+                .AddRange(new IAssetProvider<ITexture2D>[Enum.GetNames(typeof(TextureAssetKey)).Length]);
+            slot.AttachComponent<ReferenceMultiplexer<SpriteProvider>>().References
+                .AddRange(new SpriteProvider[Enum.GetNames(typeof(SpriteAssetKey)).Length]);
             return slot;
         }
 
         public static SpriteProvider GetFullInputBackgroundProvider(this Worker worker) =>
             worker.World.GetFullInputBackgroundProvider();
-        public static SpriteProvider GetFullInputBackgroundProvider(this World world)
-        {
-            const string key = "FullInputBackground_SpriteProvider";
-
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetFullInputBackgroundProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.FullInputBackground,
                 world.GetBackgroundTexture(),
                 LogixVisualCustomizer.FullBackgroundRect,
                 LogixVisualCustomizer.FullBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
-        }
 
         public static SpriteProvider GetFullInputBorderProvider(this Worker worker) =>
             worker.World.GetFullInputBorderProvider();
-        public static SpriteProvider GetFullInputBorderProvider(this World world)
-        {
-            const string key = "FullInputBorder_SpriteProvider";
-
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetFullInputBorderProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.FullInputBorder,
                 world.GetBorderTexture(),
                 LogixVisualCustomizer.FullBorderRect,
                 LogixVisualCustomizer.FullBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
-        }
+
         public static void GetHorizontalInputProviders(this Worker worker, int index, int inputs,
             out SpriteProvider inputBackground, out SpriteProvider inputBorder) =>
             worker.World.GetHorizontalInputProviders(index, inputs, out inputBackground, out inputBorder);
@@ -119,11 +142,8 @@ namespace LogixVisualCustomizer
                 inputBorder = world.GetHorizontalMiddleInputBorderProvider();
             }
         }
-        public static SpriteProvider GetHorizontalMiddleInputBackgroundProvider(this World world)
-        {
-            const string key = "HorizontalMiddleInputBackground_SpriteProvider";
-
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetHorizontalMiddleInputBackgroundProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.HorizontalMiddleBackground,
                 world.GetBackgroundTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBackgroundRect
@@ -132,16 +152,13 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBackgroundBorders
                     : LogixVisualCustomizer.HorizontalMiddleBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
-        }
+
         public static SpriteProvider GetHorizontalMiddleInputBackgroundProvider(this Worker worker) =>
             worker.World.GetHorizontalMiddleInputBackgroundProvider();
         public static SpriteProvider GetHorizontalMiddleInputBorderProvider(this Worker worker) =>
             worker.World.GetHorizontalMiddleInputBorderProvider();
-        public static SpriteProvider GetHorizontalMiddleInputBorderProvider(this World world)
-        {
-            const string key = "HorizontalMiddleInputBorder_SpriteProvider";
-
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetHorizontalMiddleInputBorderProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.HorizontalMiddleBorder,
                 world.GetBorderTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBorderRect
@@ -150,14 +167,11 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBorderBorders
                     : LogixVisualCustomizer.HorizontalMiddleBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
-        }
+
         public static SpriteProvider GetLeftInputBackgroundProvider(this Worker worker) =>
             worker.World.GetLeftInputBackgroundProvider();
-        public static SpriteProvider GetLeftInputBackgroundProvider(this World world)
-        {
-            const string key = "LeftInputBackground_SpriteProvider";
-
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetLeftInputBackgroundProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.LeftInputBackground,
                 world.GetBackgroundTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBackgroundRect
@@ -166,14 +180,11 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBackgroundBorders
                     : LogixVisualCustomizer.LeftBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
-        }
+
         public static SpriteProvider GetLeftInputBorderProvider(this Worker worker) =>
             worker.World.GetLeftInputBorderProvider();
-        public static SpriteProvider GetLeftInputBorderProvider(this World world)
-        {
-            const string key = "LeftInputBorder_SpriteProvider";
-
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetLeftInputBorderProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.LeftInputBorder,
                 world.GetBorderTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBorderRect
@@ -182,35 +193,25 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBorderBorders
                     : LogixVisualCustomizer.LeftBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
-        }
+
         public static SpriteProvider GetNodeBackgroundProvider(this Worker worker) =>
             worker.World.GetNodeBackgroundProvider();
-        public static SpriteProvider GetNodeBackgroundProvider(this World world)
-        {
-            const string key = "NodeBackground_SpriteProvider";
-
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetNodeBackgroundProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.NodeBackground,
                 world.GetBackgroundTexture(),
                 LogixVisualCustomizer.FullBackgroundRect,
                 LogixVisualCustomizer.FullBackgroundBorders,
                 LogixVisualCustomizer.NodeBackgroundScale);
-        }
         public static SpriteProvider GetNodeBorderProvider(this Worker worker) => worker.World.GetNodeBorderProvider();
-        public static SpriteProvider GetNodeBorderProvider(this World world)
-        {
-            const string key = "NodeBorder_SpriteProvider";
-
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetNodeBorderProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.NodeBorder,
                 world.GetBorderTexture(),
                 LogixVisualCustomizer.FullBorderRect,
                 LogixVisualCustomizer.FullBorderBorders,
                 LogixVisualCustomizer.NodeBackgroundScale);
-        }
-        public static SpriteProvider GetRightInputBackgroundProvider(this World world)
-        {
-            const string key = "RightInputBackground_SpriteProvider";
 
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetRightInputBackgroundProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.RightInputBackground,
                 world.GetBackgroundTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBackgroundRect
@@ -219,12 +220,9 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBackgroundBorders
                     : LogixVisualCustomizer.RightBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
-        }
-        public static SpriteProvider GetRightInputBorderProvider(this World world)
-        {
-            const string key = "RightInputBorder_SpriteProvider";
 
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetRightInputBorderProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.RightInputBorder,
                 world.GetBorderTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBorderRect
@@ -233,12 +231,9 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBorderBorders
                     : LogixVisualCustomizer.RightBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
-        }
-        public static SpriteProvider GetTopInputBackgroundProvider(this World world)
-        {
-            const string key = "TopInputBackground_SpriteProvider";
 
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetTopInputBackgroundProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.TopInputBackground,
                 world.GetBackgroundTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBackgroundRect
@@ -247,12 +242,9 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBackgroundBorders
                     : LogixVisualCustomizer.TopBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
-        }
-        public static SpriteProvider GetTopInputBorderProvider(this World world)
-        {
-            const string key = "TopInputBorder_SpriteProvider";
 
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetTopInputBorderProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.TopInputBorder,
                 world.GetBorderTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBorderRect
@@ -261,7 +253,6 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBorderBorders
                     : LogixVisualCustomizer.TopBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
-        }
 
         public static void GetVerticalInputProviders(this Worker worker, int index, int inputs,
             out SpriteProvider inputBackground, out SpriteProvider inputBorder) =>
@@ -294,11 +285,8 @@ namespace LogixVisualCustomizer
                 inputBorder = world.GetVerticalMiddleInputBorderProvider();
             }
         }
-        public static SpriteProvider GetVerticalMiddleInputBackgroundProvider(this World world)
-        {
-            const string key = "VerticalMiddleInputBackground_SpriteProvider";
-
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetVerticalMiddleInputBackgroundProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.VerticalMiddleBackground,
                 world.GetBackgroundTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBackgroundRect
@@ -307,12 +295,9 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBackgroundBorders
                     : LogixVisualCustomizer.VerticalMiddleBackgroundBorders,
                 LogixVisualCustomizer.InputBackgroundScale);
-        }
-        public static SpriteProvider GetVerticalMiddleInputBorderProvider(this World world)
-        {
-            const string key = "VerticalMiddleInputBorder_SpriteProvider";
 
-            return world.GetOrCreateSpriteProvider(key,
+        public static SpriteProvider GetVerticalMiddleInputBorderProvider(this World world) =>
+            world.GetOrCreateSpriteProvider(SpriteAssetKey.VerticalMiddleBorder,
                 world.GetBorderTexture(),
                 LogixVisualCustomizer.IndividualInputs
                     ? LogixVisualCustomizer.FullBorderRect
@@ -321,44 +306,63 @@ namespace LogixVisualCustomizer
                     ? LogixVisualCustomizer.FullBorderBorders
                     : LogixVisualCustomizer.VerticalMiddleBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
-        }
 
         private static void EnsureSettings(this SpriteProvider sprite, IAssetProvider<ITexture2D> texture, Rect localRect, float4 localBorders, float localScale)
         {
-            (sprite.Texture.ActiveLink as SyncElement)?.Component.Destroy();
+            //(sprite.Texture.ActiveLink as SyncElement)?.Component.Destroy();
 
             sprite.Texture.Target = texture;
             sprite.Rect.Value = localRect;
             sprite.Borders.Value = localBorders;
             sprite.Scale.Value = localScale;
         }
-
-        private static SpriteProvider GetOrCreateSpriteProvider(this World world, string key, IAssetProvider<ITexture2D> texture, Rect localRect, float4 localBorders, float localScale)
+        private static SpriteProvider GetOrCreateSpriteProvider(this World world, SpriteAssetKey key, IAssetProvider<ITexture2D> texture, Rect localRect, float4 localBorders, float localScale)
         {
-            key = $"{LogixVisualCustomizer.UserRandom}_{key}";
-            if (world.KeyOwner(key) is SpriteProvider sprite) return sprite;
+            world.EnsureWorld();
+            var index = (int) key;
+            var sprite = LastSprites.References[index];
+            if (sprite != null)
+            {
+                sprite.EnsureSettings(texture, localRect, localBorders, localScale);
+                return sprite;
+            }
 
             sprite = world.GetCustomizerAssets().AttachComponent<SpriteProvider>();
             sprite.EnsureSettings(texture, localRect, localBorders, localScale);
-
-            sprite.AssignKey(key);
+            LastSprites.References.GetElement(index).Target = sprite;
 
             return sprite;
         }
-
-        private static StaticTexture2D GetOrCreateTexture(this World world, string key, ModConfigurationKey<Uri> uriConfigurationKey, ModConfigurationKey<TextureFilterMode> filterConfigurationKey)
+        private static void EnsureSettings(this StaticTexture2D texture, ModConfigurationKey<Uri> uriConfigurationKey, ModConfigurationKey<TextureFilterMode> filterConfigurationKey)
         {
-            key = $"LogixCustomizer_{LogixVisualCustomizer.UserRandom}_{key}";
-            if (world.KeyOwner(key) is StaticTexture2D texture) return texture;
-
-            texture = world.GetCustomizerAssets().AttachComponent<StaticTexture2D>();
             texture.URL.DriveFromSharedSetting(uriConfigurationKey, LogixVisualCustomizer.Config);
             texture.FilterMode.DriveFromSharedSetting(filterConfigurationKey, LogixVisualCustomizer.Config);
             texture.WrapModeU.Value = TextureWrapMode.Clamp;
             texture.WrapModeV.Value = TextureWrapMode.Clamp;
-            texture.AssignKey(key);
-
+        }
+        private static StaticTexture2D GetOrCreateTexture(this World world, TextureAssetKey key, ModConfigurationKey<Uri> uriConfigurationKey, ModConfigurationKey<TextureFilterMode> filterConfigurationKey)
+        {
+            world.EnsureWorld();
+            var index = (int) key;
+            var texture = (StaticTexture2D)LastTextures.References[index];
+            if (texture != null)
+            {
+                texture.EnsureSettings(uriConfigurationKey, filterConfigurationKey);
+                return texture;
+            }
+            texture = world.GetCustomizerAssets().AttachComponent<StaticTexture2D>();
+            texture.EnsureSettings(uriConfigurationKey, filterConfigurationKey);
+            LastTextures.References.GetElement(index).Target = texture;
             return texture;
+        }
+
+        private static void EnsureWorld(this World world)
+        {
+            if (LastWorld != null && world.SessionId == LastWorld.SessionId) return;
+            LastWorld = world;
+            var assets = LastWorld.GetCustomizerAssets();
+            LastTextures = assets.GetComponent<ReferenceMultiplexer<IAssetProvider<ITexture2D>>>();
+            LastSprites = assets.GetComponent<ReferenceMultiplexer<SpriteProvider>>();
         }
     }
 }
