@@ -27,8 +27,8 @@ namespace LogixVisualCustomizer
         [HarmonyPatch("OnGenerateVisual")]
         private static bool OnGenerateVisualPrefix(AudioClipInput __instance, Slot root, AssetRef<AudioClip> ___Clip)
         {
-            var builder = (UIBuilder)Traverse.Create(__instance)
-                .Method("GenerateUI", root, 128, 72).GetValue();
+            var builder = Traverse.Create(__instance)
+                .Method("GenerateUI", root, 128, 72).GetValue<UIBuilder>();
 
             var refEditor = root.AttachComponent<RefEditor>();
             var editor = Traverse.Create(refEditor);
@@ -36,11 +36,9 @@ namespace LogixVisualCustomizer
             builder.Panel();
 
             var button = builder.Button("");
-            button.Customize(root.GetFullInputBackgroundProvider(), root.GetFullInputBorderProvider());
-            button.Pressed.Target =
-                AccessTools.MethodDelegate<ButtonEventHandler>(LogixVisualCustomizer.RefEditorRemovePressed, refEditor);
-            button.Released.Target =
-                AccessTools.MethodDelegate<ButtonEventHandler>(LogixVisualCustomizer.RefEditorSetReference, refEditor);
+            button.Customize();
+            button.Pressed.Target = AccessTools.MethodDelegate<ButtonEventHandler>(LogixVisualCustomizer.RefEditorRemovePressed, refEditor);
+            button.Released.Target = AccessTools.MethodDelegate<ButtonEventHandler>(LogixVisualCustomizer.RefEditorSetReference, refEditor);
 
             var padding = button.RectTransform;
             padding.OffsetMin.Value = new float2(4, 0);

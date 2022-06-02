@@ -19,6 +19,7 @@ namespace LogixVisualCustomizer
 {
     public class LogixVisualCustomizer : NeosMod
     {
+        public static readonly Type[] NeosEnumTypes;
         public static readonly Type[] NeosPrimitiveAndEnumTypes;
         public static readonly Type[] NeosPrimitiveTypes;
         public static readonly MethodInfo PrimitiveMemberEditorOnReset =
@@ -208,8 +209,6 @@ namespace LogixVisualCustomizer
         internal static Rect VerticalMiddleBorderRect =>
             Slices.GetVerticalMiddleRect(BorderVerticalSlices, BorderHorizontalSlices);
 
-        //public static string UserRandom { get; }
-
         static LogixVisualCustomizer()
         {
             var traverse = Traverse.Create(typeof(GenericTypes));
@@ -225,6 +224,12 @@ namespace LogixVisualCustomizer
                                             .AddItem(typeof(dummy))
                                             .AddItem(typeof(object))
                                             .ToArray();
+
+            NeosEnumTypes = traverse.Field<Type[]>("commonEnums").Value
+                .AddItem(typeof(AudioRolloffMode))
+                .AddItem(typeof(AudioDistanceSpace))
+                .AddItem(typeof(AudioTypeGroup))
+                .ToArray();
         }
 
         public static bool ButtonFilter(Button button) => button.ColorDrivers.Count > 0;
