@@ -28,9 +28,7 @@ namespace LogixVisualCustomizer
         private static void OnGenerateVisualPostfix(Slot root)
         {
             var buttons = root.GetComponentsInChildren<Button>(LogixVisualCustomizer.ButtonFilter).ToArray();
-            var inputBackground = root.GetFullInputBackgroundProvider();
-            var inputBorder = root.GetFullInputBorderProvider();
-            foreach (var button in buttons) button.Customize(inputBackground, inputBorder);
+            foreach (var button in buttons) button.Customize();
             root.ForeachComponentInChildren<Text>(VisualCustomizing.CustomizeDisplay);
         }
     }
