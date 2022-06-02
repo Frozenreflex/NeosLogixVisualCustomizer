@@ -1,4 +1,5 @@
-﻿using BaseX;
+﻿/*
+using BaseX;
 using FrooxEngine;
 using FrooxEngine.LogiX;
 using FrooxEngine.LogiX.Actions;
@@ -21,13 +22,13 @@ namespace LogixVisualCustomizer
     [HarmonyPatch]
     internal static class EnumInputPatch
     {
-        private static readonly Type castType = typeof(CastClass<,>);
-        private static readonly Dictionary<Type, string[]> enumValueCache = new Dictionary<Type, string[]>();
+        private static readonly Type CastType = typeof(CastClass<,>);
+        private static readonly Dictionary<Type, string[]> EnumValueCache = new Dictionary<Type, string[]>();
 
-        private static readonly Type fireOnChangeType = typeof(FireOnChange<>);
+        private static readonly Type FireOnChangeType = typeof(FireOnChange<>);
         private static readonly string NextValueMethod = "NextValue";
 
-        private static readonly Type objectType = typeof(object);
+        private static readonly Type ObjectType = typeof(object);
         private static readonly string PreviousValueMethod = "PreviousValue";
 
         [HarmonyTargetMethods]
@@ -39,12 +40,12 @@ namespace LogixVisualCustomizer
                 typeof(EnumInput<>));
         }
 
-        private static void addScrollPositioningLogix(ScrollRect scrollRect, LogixNode enumInput, Type type)
+        private static void AddScrollPositioningLogix(ScrollRect scrollRect, LogixNode enumInput, Type type)
         {
             var contentRoot = scrollRect.Slot;
             var valueField = enumInput.TryGetField("Value");
 
-            var valueToObjectCast = contentRoot.AttachComponent(castType.MakeGenericType(type, objectType));
+            var valueToObjectCast = contentRoot.AttachComponent(CastType.MakeGenericType(type, ObjectType));
             ((ISyncRef)valueToObjectCast.TryGetField("In")).Target = valueField;
 
             var valueToString = contentRoot.AttachComponent<ToString_Object>();
@@ -86,12 +87,12 @@ namespace LogixVisualCustomizer
             writeScrollRectOffset.Value.Target = scrollRectOffsetPack;
             writeScrollRectOffset.Target.Target = scrollRectOffsetRef;
 
-            var valueFireOnChange = contentRoot.AttachComponent(fireOnChangeType.MakeGenericType(type));
+            var valueFireOnChange = contentRoot.AttachComponent(FireOnChangeType.MakeGenericType(type));
             ((ISyncRef)valueFireOnChange.TryGetField("Value")).Target = valueField;
             ((Impulse)valueFireOnChange.TryGetField("Pulse")).Target = writeScrollRectOffset.Write;
         }
 
-        private static ButtonEventHandler getEventHandler(this LogixNode enumInput, string method)
+        private static ButtonEventHandler GetEventHandler(this LogixNode enumInput, string method)
         {
             return AccessTools.MethodDelegate<ButtonEventHandler>(enumInput.GetType().GetMethod(method, AccessTools.allDeclared), enumInput);
         }
@@ -108,7 +109,7 @@ namespace LogixVisualCustomizer
 
             builder.Style.MinWidth = 32;
             builder.Style.PreferredHeight = 32;
-            builder.Button("<<", __instance.getEventHandler(PreviousValueMethod)).Customize();
+            builder.Button("<<", __instance.GetEventHandler(PreviousValueMethod)).Customize();
 
             builder.Style.FlexibleWidth = 1;
             var scrollRect = builder.ScrollArea();
@@ -116,7 +117,7 @@ namespace LogixVisualCustomizer
             builder.FitContent(SizeFit.Disabled, SizeFit.PreferredSize);
             builder.VerticalLayout(4);
 
-            if (!enumValueCache.TryGetValue(type, out var values))
+            if (!EnumValueCache.TryGetValue(type, out var values))
             {
                 var enumValues = Enum.GetValues(type);
                 values = new string[enumValues.Length];
@@ -124,7 +125,7 @@ namespace LogixVisualCustomizer
                 for (var i = 0; i < enumValues.Length; ++i)
                     values[i] = enumValues.GetValue(i).ToString();
 
-                enumValueCache.Add(type, values);
+                EnumValueCache.Add(type, values);
             }
 
             foreach (var value in values)
@@ -134,7 +135,7 @@ namespace LogixVisualCustomizer
                 text.Slot.Name = value;
             }
 
-            addScrollPositioningLogix(scrollRect, __instance, type);
+            AddScrollPositioningLogix(scrollRect, __instance, type);
 
             //SyncRef<Text> valueDisplay = this._valueDisplay;
             //localeString = "---";
@@ -143,9 +144,10 @@ namespace LogixVisualCustomizer
             builder.NestOut();
 
             builder.Style.FlexibleWidth = -1f;
-            builder.Button(">>", __instance.getEventHandler(NextValueMethod)).Customize();
+            builder.Button(">>", __instance.GetEventHandler(NextValueMethod)).Customize();
 
             return false;
         }
     }
 }
+*/

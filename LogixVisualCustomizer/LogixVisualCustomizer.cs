@@ -136,7 +136,7 @@ namespace LogixVisualCustomizer
         public override string Author => "Banane9, Fro Zen";
         public override string Link => "https://github.com/Frozenreflex/NeosLogixVisualCustomizer";
         public override string Name => "LogixVisualCustomizer";
-        public override string Version => "1.0.0-1";
+        public override string Version => "1.0.0-2";
         internal static float4 BackgroundHorizontalSlices =>
             UseBackground ? Config.GetValue(BackgroundHorizontalSlicesKey) : DefaultSlices;
         internal static Uri BackgroundSpriteUri => UseBackground ? Config.GetValue(BackgroundSpriteUriKey) : null;
@@ -249,7 +249,7 @@ namespace LogixVisualCustomizer
             var harmony = new Harmony($"{Author}.{Name}");
             harmony.PatchAll();
             TextFieldPatch.Patch(harmony);
-            //EnumInputPatch.Patch(harmony);
+            EnumInputPatch.Patch(harmony);
         }
     }
 }
