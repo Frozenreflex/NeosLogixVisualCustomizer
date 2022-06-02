@@ -225,13 +225,6 @@ namespace LogixVisualCustomizer
                                             .AddItem(typeof(dummy))
                                             .AddItem(typeof(object))
                                             .ToArray();
-            /*
-            UserRandom = "";
-            var rand = new Random();
-            for (var i = 0; i < 6; i++) UserRandom += 
-                Convert.ToChar(rand.Next(26) + (rand.Next(2) == 0 ? 65 : 97));
-            Msg($"Random string: {UserRandom}");
-            */
         }
 
         public static bool ButtonFilter(Button button) => button.ColorDrivers.Count > 0;
@@ -251,7 +244,7 @@ namespace LogixVisualCustomizer
             var harmony = new Harmony($"{Author}.{Name}");
             harmony.PatchAll();
             TextFieldPatch.Patch(harmony);
-            EnumInputPatch.Patch(harmony);
+            //EnumInputPatch.Patch(harmony);
         }
     }
 }
