@@ -54,9 +54,11 @@ namespace LogixVisualCustomizer
             textRect.AnchorMax.Value = new float2(0.9f, 0.9f);
         }
 
-        public static void CustomizeDisplay(this Text text) =>
+        public static void CustomizeDisplay(this Text text)
+        {
             text.Color.DriveFromSharedSetting(LogixVisualCustomizer.TextColorKey, LogixVisualCustomizer.Config);
-
+            text.Font.Target = text.GetFont();
+        }
         public static void CustomizeHorizontal(this Button[] buttons)
         {
             for (var i = 0; i < buttons.Length; ++i)

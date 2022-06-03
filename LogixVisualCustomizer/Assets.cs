@@ -8,6 +8,10 @@ using System.Text;
 
 namespace LogixVisualCustomizer
 {
+    internal enum FontAssetKey
+    {
+        Main,
+    }
     internal enum TextureAssetKey
     {
         BackgroundTexture,
@@ -38,7 +42,22 @@ namespace LogixVisualCustomizer
         private static World LastWorld;
         private static ReferenceMultiplexer<IAssetProvider<ITexture2D>> LastTextures;
         private static ReferenceMultiplexer<SpriteProvider> LastSprites;
-        private static Dictionary<string, string> UserHash = new Dictionary<string, string>();
+        private static ReferenceMultiplexer<FontChain> LastFonts;
+        private static ValueField<int> LastIdentifier;
+        private static Dictionary<string, string> UserHashDictionary = new Dictionary<string, string>();
+        private static int CurrentIdentifier => 2;
+
+        private static string GetUserHash(string user)
+        {
+            if (UserHashDictionary.TryGetValue(user, out var hash)) return hash;
+            //this doesn't need to be completely cryptographically secure or anything like that,
+            //but blatantly showing the userID does feel kinda wrong to me
+            hash = BitConverter.ToString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(user)))
+                .Replace("-", string.Empty).Substring(0, 8);
+            //cache the hash so we don't compute a new one every time
+            UserHashDictionary.Add(user, hash);
+            return hash;
+        }
         public static IAssetProvider<ITexture2D> GetBackgroundTexture(this World world) => world.GetOrCreateTexture(
             TextureAssetKey.BackgroundTexture, LogixVisualCustomizer.BackgroundSpriteUriKey,
             LogixVisualCustomizer.BackgroundSpriteFilterKey);
@@ -72,26 +91,25 @@ namespace LogixVisualCustomizer
         public static Slot GetCustomizerAssets(this World world)
         {
             var user = world.LocalUser.UserID;
-            if (!UserHash.TryGetValue(world.LocalUser.UserID, out var hash))
-            {
-                //this doesn't need to be completely cryptographically secure or anything like that,
-                //but blatantly showing the userID does feel kinda wrong to me
-                hash = BitConverter.ToString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(user)))
-                    .Replace("-", string.Empty).Substring(0, 8);
-                //cache the hash so we don't compute a new one every time
-                UserHash.Add(user, hash);
-            }
+            var hash = GetUserHash(user);
             var key = $"LogixCustomizerAssets_{hash}";
             
             if (world.AssetsSlot.Find(key) is Slot slot)
                 return slot;
 
-            slot = world.AssetsSlot.AddSlot(key);
+            return world.CreateAssetSlot(hash);
+        }
+        private static Slot CreateAssetSlot(this World world, string key)
+        {
+            var slot = world.AssetsSlot.AddSlot($"LogixCustomizerAssets_{key}");
+            slot.AttachComponent<ValueField<int>>().Value.Value = CurrentIdentifier;
             slot.AttachComponent<AssetOptimizationBlock>();
             slot.AttachComponent<ReferenceMultiplexer<IAssetProvider<ITexture2D>>>().References
-                .AddRange(new IAssetProvider<ITexture2D>[Enum.GetNames(typeof(TextureAssetKey)).Length]);
+                .AddRange(new IAssetProvider<ITexture2D>[Enum.GetValues(typeof(TextureAssetKey)).Length]);
             slot.AttachComponent<ReferenceMultiplexer<SpriteProvider>>().References
-                .AddRange(new SpriteProvider[Enum.GetNames(typeof(SpriteAssetKey)).Length]);
+                .AddRange(new SpriteProvider[Enum.GetValues(typeof(SpriteAssetKey)).Length]);
+            slot.AttachComponent<ReferenceMultiplexer<FontChain>>().References
+                .AddRange(new FontChain[Enum.GetValues(typeof(FontAssetKey)).Length]);
             return slot;
         }
 
@@ -113,10 +131,18 @@ namespace LogixVisualCustomizer
                 LogixVisualCustomizer.FullBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
 
+        public static IAssetProvider<FontSet> GetFont(this Worker worker) => worker.World.GetFont();
+
+        public static IAssetProvider<FontSet> GetFont(this World world) => world.GetOrCreateFont(FontAssetKey.Main,
+            LogixVisualCustomizer.TextFontUriKey, LogixVisualCustomizer.TextFontGlyphEmSizeKey,
+            LogixVisualCustomizer.TextFontSecondaryUriKey, LogixVisualCustomizer.TextFontTertiaryUriKey,
+            LogixVisualCustomizer.TextFontQuaternaryUriKey);
+
         public static void GetHorizontalInputProviders(this Worker worker, int index, int inputs,
             out SpriteProvider inputBackground, out SpriteProvider inputBorder) =>
             worker.World.GetHorizontalInputProviders(index, inputs, out inputBackground, out inputBorder);
-        public static void GetHorizontalInputProviders(this World world, int index, int total, out SpriteProvider inputBackground, out SpriteProvider inputBorder)
+        public static void GetHorizontalInputProviders(this World world, int index, int total,
+            out SpriteProvider inputBackground, out SpriteProvider inputBorder)
         {
             if (index == 0)
             {
@@ -307,18 +333,18 @@ namespace LogixVisualCustomizer
                     : LogixVisualCustomizer.VerticalMiddleBorderBorders,
                 LogixVisualCustomizer.InputBorderScale);
 
-        private static void EnsureSettings(this SpriteProvider sprite, IAssetProvider<ITexture2D> texture, Rect localRect, float4 localBorders, float localScale)
+        private static void EnsureSettings(this SpriteProvider sprite, IAssetProvider<ITexture2D> texture,
+            Rect localRect, float4 localBorders, float localScale)
         {
-            //(sprite.Texture.ActiveLink as SyncElement)?.Component.Destroy();
-
             sprite.Texture.Target = texture;
             sprite.Rect.Value = localRect;
             sprite.Borders.Value = localBorders;
             sprite.Scale.Value = localScale;
         }
-        private static SpriteProvider GetOrCreateSpriteProvider(this World world, SpriteAssetKey key, IAssetProvider<ITexture2D> texture, Rect localRect, float4 localBorders, float localScale)
+        private static SpriteProvider GetOrCreateSpriteProvider(this World world, SpriteAssetKey key,
+            IAssetProvider<ITexture2D> texture, Rect localRect, float4 localBorders, float localScale)
         {
-            world.EnsureWorld();
+            world.EnsureAssets();
             var index = (int) key;
             var sprite = LastSprites.References[index];
             if (sprite != null)
@@ -333,16 +359,67 @@ namespace LogixVisualCustomizer
 
             return sprite;
         }
-        private static void EnsureSettings(this StaticTexture2D texture, ModConfigurationKey<Uri> uriConfigurationKey, ModConfigurationKey<TextureFilterMode> filterConfigurationKey)
+
+        private static IAssetProvider<FontSet> GetOrCreateFont(this World world, FontAssetKey key,
+            ModConfigurationKey<Uri> uriKey, ModConfigurationKey<int> glyphConfigKey,
+            ModConfigurationKey<Uri> uriKey2 = null, ModConfigurationKey<Uri> uriKey3 = null, 
+            ModConfigurationKey<Uri> uriKey4 = null)
+        {
+            world.EnsureAssets();
+            var index = (int) key;
+            var font = LastFonts.References[index];
+            if (font != null)
+            {
+                font.EnsureSettings(uriKey, glyphConfigKey, uriKey2, uriKey3, uriKey4);
+                return font;
+            }
+
+            var assets = world.GetCustomizerAssets();
+            font = assets.AttachComponent<FontChain>();
+            
+            var main = assets.AttachComponent<StaticFont>();
+            font.MainFont.Target = main;
+            for (var i = 0; i < 3; i++)
+            {
+                var fontpart = assets.AttachComponent<StaticFont>();
+                font.FallbackFonts.Add(fontpart);
+            }
+            font.EnsureSettings(uriKey, glyphConfigKey, uriKey2, uriKey3, uriKey4);
+            LastFonts.References.GetElement(index).Target = font;
+            
+            return font;
+        }
+        private static void EnsureSettings(this StaticTexture2D texture, ModConfigurationKey<Uri> uriConfigurationKey,
+            ModConfigurationKey<TextureFilterMode> filterConfigurationKey)
         {
             texture.URL.DriveFromSharedSetting(uriConfigurationKey, LogixVisualCustomizer.Config);
             texture.FilterMode.DriveFromSharedSetting(filterConfigurationKey, LogixVisualCustomizer.Config);
             texture.WrapModeU.Value = TextureWrapMode.Clamp;
             texture.WrapModeV.Value = TextureWrapMode.Clamp;
         }
-        private static StaticTexture2D GetOrCreateTexture(this World world, TextureAssetKey key, ModConfigurationKey<Uri> uriConfigurationKey, ModConfigurationKey<TextureFilterMode> filterConfigurationKey)
+
+        private static void EnsureSettings(this FontChain font, ModConfigurationKey<Uri> uriKey,
+            ModConfigurationKey<int> glyphConfigKey, ModConfigurationKey<Uri> uriKey2 = null,
+            ModConfigurationKey<Uri> uriKey3 = null, ModConfigurationKey<Uri> uriKey4 = null)
         {
-            world.EnsureWorld();
+            var main = (StaticFont)font.MainFont;
+            var keys = new[]
+            {
+                uriKey2, uriKey3, uriKey4
+            };
+            main.URL.DriveFromSharedSetting(uriKey, LogixVisualCustomizer.Config);
+            main.GlyphEmSize.DriveFromSharedSetting(glyphConfigKey, LogixVisualCustomizer.Config);
+            for (var i = 0; i < font.FallbackFonts.Count; i++)
+            {
+                var f = (StaticFont)font.FallbackFonts[i];
+                f.URL.DriveFromSharedSetting(keys[i], LogixVisualCustomizer.Config);
+                f.GlyphEmSize.DriveFromSharedSetting(glyphConfigKey, LogixVisualCustomizer.Config);
+            }
+        }
+        private static StaticTexture2D GetOrCreateTexture(this World world, TextureAssetKey key,
+            ModConfigurationKey<Uri> uriConfigurationKey, ModConfigurationKey<TextureFilterMode> filterConfigurationKey)
+        {
+            world.EnsureAssets();
             var index = (int) key;
             var texture = (StaticTexture2D)LastTextures.References[index];
             if (texture != null)
@@ -356,13 +433,25 @@ namespace LogixVisualCustomizer
             return texture;
         }
 
-        private static void EnsureWorld(this World world)
+        private static void EnsureAssets(this World world)
         {
             if (LastWorld != null && world.SessionId == LastWorld.SessionId) return;
             LastWorld = world;
             var assets = LastWorld.GetCustomizerAssets();
-            LastTextures = assets.GetComponent<ReferenceMultiplexer<IAssetProvider<ITexture2D>>>();
-            LastSprites = assets.GetComponent<ReferenceMultiplexer<SpriteProvider>>();
+            assets.UpdateLast();
+            if (LastIdentifier != default && LastIdentifier.Value.Value == CurrentIdentifier) return;
+            assets.Destroy(); //older version needs to be removed to allow new version
+            //i prefer nodes created with older versions losing their assets over newer nodes getting nothing and
+            //causing errors in logs
+            assets = world.CreateAssetSlot(GetUserHash(world.LocalUser.UserID));
+            assets.UpdateLast();
+        }
+        private static void UpdateLast(this Slot slot)
+        {
+            LastIdentifier = slot.GetComponent<ValueField<int>>();
+            LastTextures = slot.GetComponent<ReferenceMultiplexer<IAssetProvider<ITexture2D>>>();
+            LastSprites = slot.GetComponent<ReferenceMultiplexer<SpriteProvider>>();
+            LastFonts = slot.GetComponent<ReferenceMultiplexer<FontChain>>();
         }
     }
 }

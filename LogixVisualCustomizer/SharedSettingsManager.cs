@@ -12,13 +12,11 @@ namespace LogixVisualCustomizer
 {
     internal static class SharedSettingsManager
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //the name is a lie, also this is inlined because i'm too lazy to move stuff around
+        //the name is a lie
         public static void DriveFromSharedSetting<T>(this IField<T> field, ModConfigurationKey<T> configurationKey,
             ModConfiguration config = null)
         {
-            // :/
-            field.Value = config.GetValue(configurationKey);
+            if (configurationKey != null) field.Value = config.GetValue(configurationKey);
         }
     }
 }

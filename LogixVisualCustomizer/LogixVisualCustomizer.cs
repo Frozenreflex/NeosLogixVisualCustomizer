@@ -132,6 +132,24 @@ namespace LogixVisualCustomizer
         [AutoRegisterConfigKey]
         internal static ModConfigurationKey<color> TextColorKey =
             new ModConfigurationKey<color>("TextColor", "Text Color", () => new color(.95f));
+        
+        [AutoRegisterConfigKey]
+        internal static ModConfigurationKey<Uri> TextFontUriKey =
+            new ModConfigurationKey<Uri>("TextMainFontUri", "Text Primary Font URI", () => new Uri("neosdb:///08a5db276a5e8a6a30ae8af3618356d093e288776f043849d1d01a9bcb12fc37.ttf"));
+        [AutoRegisterConfigKey]
+        internal static ModConfigurationKey<Uri> TextFontSecondaryUriKey =
+            new ModConfigurationKey<Uri>("TextSecondaryFontUri", "Text Secondary Font URI", () => NeosAssets.Graphics.Fonts.Noto_Emoji.NotoEmoji_Regular);
+        [AutoRegisterConfigKey]
+        internal static ModConfigurationKey<Uri> TextFontTertiaryUriKey =
+            new ModConfigurationKey<Uri>("TextTertiaryFontUri", "Text Tertiary Font URI", () => NeosAssets.Graphics.Fonts.Noto_Sans.NotoSansCJKjp_Medium);
+        [AutoRegisterConfigKey]
+        internal static ModConfigurationKey<Uri> TextFontQuaternaryUriKey =
+            new ModConfigurationKey<Uri>("TextQuaternaryFontUri", "Text Quaternary Font URI", () => null);
+        
+        [AutoRegisterConfigKey]
+        internal static ModConfigurationKey<int> TextFontGlyphEmSizeKey =
+            new ModConfigurationKey<int>("TextFontGlyphEmSizeKey", "Text Font GlyphEm Size",
+                () => 64);
 
         public override string Author => "Banane9, Fro Zen";
         public override string Link => "https://github.com/Frozenreflex/NeosLogixVisualCustomizer";
