@@ -44,8 +44,13 @@ namespace LogixVisualCustomizer
 
         [AutoRegisterConfigKey]
         internal static ModConfigurationKey<Uri> BackgroundSpriteUriKey = new ModConfigurationKey<Uri>(
-            "BackgroundSpriteUri", "Background Sprite URI",
-            () => new Uri("neosdb:///1e64bbda2fb62373fd3b82ae4f96a60daebaff81d690c96bbe03d10871221209.png"));
+            "BackgroundSpriteUri", "",
+            () => new Uri("neosdb:///1e64bbda2fb62373fd3b82ae4f96a60daebaff81d690c96bbe03d10871221209.png"), true);
+        
+        [AutoRegisterConfigKey]
+        internal static ModConfigurationKey<string> BackgroundSpriteUriStringKey =
+            new ModConfigurationKey<string>("BackgroundSpriteUriString", "Background Sprite URI",
+                () => "neosdb:///1e64bbda2fb62373fd3b82ae4f96a60daebaff81d690c96bbe03d10871221209.png");
 
         [AutoRegisterConfigKey]
         internal static ModConfigurationKey<float4> BackgroundVerticalSlicesKey =
@@ -66,8 +71,13 @@ namespace LogixVisualCustomizer
 
         [AutoRegisterConfigKey]
         internal static ModConfigurationKey<Uri> BorderSpriteUriKey = new ModConfigurationKey<Uri>("BorderSpriteUri",
-            "Border Sprite URI",
-            () => new Uri("neosdb:///518299baeefe744aa609c9b2c77c5930b6593c051b38eba116ff9177e8200a4f.png"));
+            "",
+            () => new Uri("neosdb:///518299baeefe744aa609c9b2c77c5930b6593c051b38eba116ff9177e8200a4f.png"), true);
+        
+        [AutoRegisterConfigKey]
+        internal static ModConfigurationKey<string> BorderSpriteUriStringKey =
+            new ModConfigurationKey<string>("BorderSpriteUriString", "Border Sprite URI",
+                () => "neosdb:///518299baeefe744aa609c9b2c77c5930b6593c051b38eba116ff9177e8200a4f.png");
 
         [AutoRegisterConfigKey]
         internal static ModConfigurationKey<float4> BorderVerticalSlicesKey =
@@ -135,16 +145,35 @@ namespace LogixVisualCustomizer
         
         [AutoRegisterConfigKey]
         internal static ModConfigurationKey<Uri> TextFontUriKey =
-            new ModConfigurationKey<Uri>("TextMainFontUri", "Text Primary Font URI", () => new Uri("neosdb:///08a5db276a5e8a6a30ae8af3618356d093e288776f043849d1d01a9bcb12fc37.ttf"));
+            new ModConfigurationKey<Uri>("TextMainFontUri", "",
+                () => new Uri("neosdb:///08a5db276a5e8a6a30ae8af3618356d093e288776f043849d1d01a9bcb12fc37.ttf"), true);
         [AutoRegisterConfigKey]
         internal static ModConfigurationKey<Uri> TextFontSecondaryUriKey =
-            new ModConfigurationKey<Uri>("TextSecondaryFontUri", "Text Secondary Font URI", () => NeosAssets.Graphics.Fonts.Noto_Emoji.NotoEmoji_Regular);
+            new ModConfigurationKey<Uri>("TextSecondaryFontUri", "",
+                () => NeosAssets.Graphics.Fonts.Noto_Emoji.NotoEmoji_Regular, true);
         [AutoRegisterConfigKey]
         internal static ModConfigurationKey<Uri> TextFontTertiaryUriKey =
-            new ModConfigurationKey<Uri>("TextTertiaryFontUri", "Text Tertiary Font URI", () => NeosAssets.Graphics.Fonts.Noto_Sans.NotoSansCJKjp_Medium);
+            new ModConfigurationKey<Uri>("TextTertiaryFontUri", "",
+                () => NeosAssets.Graphics.Fonts.Noto_Sans.NotoSansCJKjp_Medium, true);
         [AutoRegisterConfigKey]
         internal static ModConfigurationKey<Uri> TextFontQuaternaryUriKey =
-            new ModConfigurationKey<Uri>("TextQuaternaryFontUri", "Text Quaternary Font URI", () => null);
+            new ModConfigurationKey<Uri>("TextQuaternaryFontUri", "", () => null, true);
+        
+        [AutoRegisterConfigKey]
+        internal static ModConfigurationKey<string> TextFontUriKeyString =
+            new ModConfigurationKey<string>("TextMainFontUriString", "Text Primary Font URI",
+                () => "neosdb:///08a5db276a5e8a6a30ae8af3618356d093e288776f043849d1d01a9bcb12fc37.ttf");
+        [AutoRegisterConfigKey]
+        internal static ModConfigurationKey<string> TextFontSecondaryUriKeyString =
+            new ModConfigurationKey<string>("TextSecondaryFontUriString", "Text Secondary Font URI",
+                () => NeosAssets.Graphics.Fonts.Noto_Emoji.NotoEmoji_Regular.ToString());
+        [AutoRegisterConfigKey]
+        internal static ModConfigurationKey<string> TextFontTertiaryUriKeyString =
+            new ModConfigurationKey<string>("TextTertiaryFontUriString", "Text Tertiary Font URI",
+                () => NeosAssets.Graphics.Fonts.Noto_Sans.NotoSansCJKjp_Medium.ToString());
+        [AutoRegisterConfigKey]
+        internal static ModConfigurationKey<string> TextFontQuaternaryUriKeyString =
+            new ModConfigurationKey<string>("TextQuaternaryFontUriString", "Text Quaternary Font URI", () => "");
         
         [AutoRegisterConfigKey]
         internal static ModConfigurationKey<int> TextFontGlyphEmSizeKey =
@@ -154,7 +183,7 @@ namespace LogixVisualCustomizer
         public override string Author => "Banane9, Fro Zen";
         public override string Link => "https://github.com/Frozenreflex/NeosLogixVisualCustomizer";
         public override string Name => "LogixVisualCustomizer";
-        public override string Version => "1.0.0-2";
+        public override string Version => "1.0.0-3";
         internal static float4 BackgroundHorizontalSlices =>
             UseBackground ? Config.GetValue(BackgroundHorizontalSlicesKey) : DefaultSlices;
         internal static Uri BackgroundSpriteUri => UseBackground ? Config.GetValue(BackgroundSpriteUriKey) : null;
@@ -227,6 +256,17 @@ namespace LogixVisualCustomizer
         internal static Rect VerticalMiddleBorderRect =>
             Slices.GetVerticalMiddleRect(BorderVerticalSlices, BorderHorizontalSlices);
 
+        internal static Dictionary<ModConfigurationKey, ModConfigurationKey<Uri>> UriKeys =
+            new Dictionary<ModConfigurationKey, ModConfigurationKey<Uri>>
+            {
+                {BackgroundSpriteUriStringKey, BackgroundSpriteUriKey},
+                {BorderSpriteUriStringKey, BorderSpriteUriKey},
+                {TextFontUriKeyString, TextFontUriKey},
+                {TextFontSecondaryUriKeyString, TextFontSecondaryUriKey},
+                {TextFontTertiaryUriKeyString, TextFontTertiaryUriKey},
+                {TextFontQuaternaryUriKeyString, TextFontQuaternaryUriKey},
+            };
+
         static LogixVisualCustomizer()
         {
             var traverse = Traverse.Create(typeof(GenericTypes));
@@ -262,12 +302,20 @@ namespace LogixVisualCustomizer
         public override void OnEngineInit()
         {
             Config = GetConfiguration();
+            Config.OnThisConfigurationChanged += OnConfigurationChanged;
             Config.Save(true);
 
             var harmony = new Harmony($"{Author}.{Name}");
             harmony.PatchAll();
             TextFieldPatch.Patch(harmony);
             EnumInputPatch.Patch(harmony);
+        }
+        
+        private void OnConfigurationChanged(ConfigurationChangedEvent changeEvent)
+        {
+            if (!UriKeys.TryGetValue(changeEvent.Key, out var value)) return;
+            if (!Uri.TryCreate((string) Config.GetValue(changeEvent.Key), UriKind.Absolute, out var uri)) uri = null;
+            Config.Set(value, uri);
         }
     }
 }
