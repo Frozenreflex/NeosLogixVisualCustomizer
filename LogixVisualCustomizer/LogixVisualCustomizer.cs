@@ -287,6 +287,9 @@ namespace LogixVisualCustomizer
                 .AddItem(typeof(AudioRolloffMode))
                 .AddItem(typeof(AudioDistanceSpace))
                 .AddItem(typeof(AudioTypeGroup))
+                .AddItem(typeof(PhysicalLocomotion.MovementMode))
+                .AddItem(typeof(PhysicalLocomotion.EnvironmentGripping))
+                .AddItem(typeof(PhysicalLocomotion.GripRotation))
                 .ToArray();
         }
 

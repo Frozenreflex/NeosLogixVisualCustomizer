@@ -40,9 +40,12 @@ namespace LogixVisualCustomizer
     internal static class Assets
     {
         private static World LastWorld;
-        private static ReferenceMultiplexer<IAssetProvider<ITexture2D>> LastTextures;
-        private static ReferenceMultiplexer<SpriteProvider> LastSprites;
-        private static ReferenceMultiplexer<FontChain> LastFonts;
+        private static SyncRefList<IAssetProvider<ITexture2D>> LastTextures;
+        //private static ReferenceMultiplexer<IAssetProvider<ITexture2D>> LastTextures;
+        private static SyncRefList<SpriteProvider> LastSprites;
+        //private static ReferenceMultiplexer<SpriteProvider> LastSprites;
+        private static SyncRefList<FontChain> LastFonts;
+        //private static ReferenceMultiplexer<FontChain> LastFonts;
         private static ValueField<int> LastIdentifier;
         private static Dictionary<string, string> UserHashDictionary = new Dictionary<string, string>();
         private static int CurrentIdentifier => 2;
@@ -346,7 +349,7 @@ namespace LogixVisualCustomizer
         {
             world.EnsureAssets();
             var index = (int) key;
-            var sprite = LastSprites.References[index];
+            var sprite = LastSprites[index];
             if (sprite != null)
             {
                 sprite.EnsureSettings(texture, localRect, localBorders, localScale);
@@ -355,7 +358,7 @@ namespace LogixVisualCustomizer
 
             sprite = world.GetCustomizerAssets().AttachComponent<SpriteProvider>();
             sprite.EnsureSettings(texture, localRect, localBorders, localScale);
-            LastSprites.References.GetElement(index).Target = sprite;
+            LastSprites.GetElement(index).Target = sprite;
 
             return sprite;
         }
@@ -367,7 +370,7 @@ namespace LogixVisualCustomizer
         {
             world.EnsureAssets();
             var index = (int) key;
-            var font = LastFonts.References[index];
+            var font = LastFonts[index];
             if (font != null)
             {
                 font.EnsureSettings(uriKey, glyphConfigKey, uriKey2, uriKey3, uriKey4);
@@ -385,7 +388,7 @@ namespace LogixVisualCustomizer
                 font.FallbackFonts.Add(fontpart);
             }
             font.EnsureSettings(uriKey, glyphConfigKey, uriKey2, uriKey3, uriKey4);
-            LastFonts.References.GetElement(index).Target = font;
+            LastFonts.GetElement(index).Target = font;
             
             return font;
         }
@@ -421,7 +424,7 @@ namespace LogixVisualCustomizer
         {
             world.EnsureAssets();
             var index = (int) key;
-            var texture = (StaticTexture2D)LastTextures.References[index];
+            var texture = (StaticTexture2D)LastTextures[index];
             if (texture != null)
             {
                 texture.EnsureSettings(uriConfigurationKey, filterConfigurationKey);
@@ -429,7 +432,7 @@ namespace LogixVisualCustomizer
             }
             texture = world.GetCustomizerAssets().AttachComponent<StaticTexture2D>();
             texture.EnsureSettings(uriConfigurationKey, filterConfigurationKey);
-            LastTextures.References.GetElement(index).Target = texture;
+            LastTextures.GetElement(index).Target = texture;
             return texture;
         }
 
@@ -449,9 +452,9 @@ namespace LogixVisualCustomizer
         private static void UpdateLast(this Slot slot)
         {
             LastIdentifier = slot.GetComponent<ValueField<int>>();
-            LastTextures = slot.GetComponent<ReferenceMultiplexer<IAssetProvider<ITexture2D>>>();
-            LastSprites = slot.GetComponent<ReferenceMultiplexer<SpriteProvider>>();
-            LastFonts = slot.GetComponent<ReferenceMultiplexer<FontChain>>();
+            LastTextures = slot.GetComponent<ReferenceMultiplexer<IAssetProvider<ITexture2D>>>()?.References;
+            LastSprites = slot.GetComponent<ReferenceMultiplexer<SpriteProvider>>()?.References;
+            LastFonts = slot.GetComponent<ReferenceMultiplexer<FontChain>>()?.References;
         }
     }
 }
