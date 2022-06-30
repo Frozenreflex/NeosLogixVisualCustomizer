@@ -270,6 +270,7 @@ namespace LogixVisualCustomizer
                                 .Concat(AccessTools.GetTypesFromAssembly(typeof(float4).Assembly))
                                 .Concat(AccessTools.GetTypesFromAssembly(typeof(AudioDistanceSpace).Assembly))
                                 .Concat(AccessTools.GetTypesFromAssembly(typeof(SessionAccessLevel).Assembly))
+                                .Distinct()
                                 .Where(type => type.IsEnum && !type.IsNested)
                                 .ToArray();
 
