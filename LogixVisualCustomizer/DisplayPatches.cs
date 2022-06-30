@@ -63,7 +63,7 @@ namespace LogixVisualCustomizer
             mask.Slot.GetComponent<Image>().Sprite.Target = root.GetFullInputBackgroundProvider();
 
             var noAlphaImage = builder.Image();
-            CreateAlphaRemovalLogix(noAlphaImage.Slot, alphaColorImage.Tint, noAlphaImage.Tint);
+            CreateAlphaRemovalLogix(root, alphaColorImage.Tint, noAlphaImage.Tint);
 
             var checkers = builder.Image(NeosAssets.Common.Backgrounds.TransparentLight64);
             alphaColorImage.Slot.Parent = checkers.Slot;
@@ -78,10 +78,10 @@ namespace LogixVisualCustomizer
         [HarmonyTargetMethods]
         private static IEnumerable<MethodBase> TargetMethods()
         {
-            return AccessTools.GetTypesFromAssembly(typeof(Display_Dummy).Assembly)
-                .Where(t => t.Namespace == "FrooxEngine.LogiX.Display")
-                .Select(t => t.GetMethod("OnGenerateVisual", AccessTools.allDeclared))
-                .Where(m => m != null); // Dummy doesn't have one
+            return LogixVisualCustomizer.GenerateMethodTargets(
+                "OnGenerateVisual",
+                AccessTools.GetTypesFromAssembly(typeof(Display_Dummy).Assembly)
+                    .Where(t => t.Namespace == "FrooxEngine.LogiX.Display"));
         }
     }
 }

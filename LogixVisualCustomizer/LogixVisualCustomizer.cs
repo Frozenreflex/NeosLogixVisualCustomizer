@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using BaseX;
-using CodeX;
+using CloudX.Shared;
 using FrooxEngine;
-using FrooxEngine.LogiX;
-using FrooxEngine.LogiX.Data;
 using FrooxEngine.LogiX.Input;
-using FrooxEngine.LogiX.ProgramFlow;
 using FrooxEngine.UIX;
 using HarmonyLib;
 using NeosModLoader;
@@ -183,7 +178,7 @@ namespace LogixVisualCustomizer
         public override string Author => "Banane9, Fro Zen";
         public override string Link => "https://github.com/Frozenreflex/NeosLogixVisualCustomizer";
         public override string Name => "LogixVisualCustomizer";
-        public override string Version => "1.0.0-3";
+        public override string Version => "1.0.1-1";
         internal static float4 BackgroundHorizontalSlices =>
             UseBackground ? Config.GetValue(BackgroundHorizontalSlicesKey) : DefaultSlices;
         internal static Uri BackgroundSpriteUri => UseBackground ? Config.GetValue(BackgroundSpriteUriKey) : null;
@@ -271,6 +266,12 @@ namespace LogixVisualCustomizer
         {
             var traverse = Traverse.Create(typeof(GenericTypes));
 
+            NeosEnumTypes = AccessTools.GetTypesFromAssembly(typeof(EnumInput<>).Assembly)
+                                .Concat(AccessTools.GetTypesFromAssembly(typeof(float4).Assembly))
+                                .Concat(AccessTools.GetTypesFromAssembly(typeof(SessionAccessLevel).Assembly))
+                                .Where(type => type.IsEnum && !type.IsNested)
+                                .ToArray();
+
             NeosPrimitiveTypes = traverse.Field<Type[]>("neosPrimitives").Value
                                     .Where(type => type.Name != "String")
                                     .AddItem(typeof(dummy))
@@ -282,25 +283,24 @@ namespace LogixVisualCustomizer
                                             .AddItem(typeof(dummy))
                                             .AddItem(typeof(object))
                                             .ToArray();
-
-            NeosEnumTypes = traverse.Field<Type[]>("commonEnums").Value
-                .AddItem(typeof(AudioRolloffMode))
-                .AddItem(typeof(AudioDistanceSpace))
-                .AddItem(typeof(AudioTypeGroup))
-                .AddItem(typeof(PhysicalLocomotion.MovementMode))
-                .AddItem(typeof(PhysicalLocomotion.EnvironmentGripping))
-                .AddItem(typeof(PhysicalLocomotion.GripRotation))
-                .ToArray();
         }
 
         public static bool ButtonFilter(Button button) => button.ColorDrivers.Count > 0;
 
         public static IEnumerable<MethodBase> GenerateGenericMethodTargets(IEnumerable<Type> genericTypes,
             string methodName, params Type[] baseTypes) =>
-            genericTypes
-                .SelectMany(type => baseTypes.Select(baseType =>
-                    baseType.IsGenericTypeDefinition ? baseType.MakeGenericType(type) : baseType))
-                .Select(type => type.GetMethod(methodName, AccessTools.all));
+            GenerateGenericMethodTargets(genericTypes, methodName, (IEnumerable<Type>) baseTypes);
+
+        public static IEnumerable<MethodBase> GenerateGenericMethodTargets(IEnumerable<Type> genericTypes,
+            string methodName, IEnumerable<Type> baseTypes) =>
+            GenerateMethodTargets(methodName,
+                genericTypes.SelectMany(type => baseTypes.Select(baseType => baseType.MakeGenericType(type))));
+
+        public static IEnumerable<MethodBase> GenerateMethodTargets(string methodName, params Type[] baseTypes) =>
+            GenerateMethodTargets(methodName, (IEnumerable<Type>) baseTypes);
+
+        public static IEnumerable<MethodBase> GenerateMethodTargets(string methodName, IEnumerable<Type> baseTypes) =>
+            baseTypes.Select(type => type.GetMethod(methodName, AccessTools.all)).Where(m => m != null);
 
         public override void OnEngineInit()
         {
