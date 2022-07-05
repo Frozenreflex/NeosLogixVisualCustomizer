@@ -40,6 +40,7 @@ namespace LogixVisualCustomizer
     internal static class Assets
     {
         private static World LastWorld;
+        private static Slot LastSlot;
         private static SyncRefList<IAssetProvider<ITexture2D>> LastTextures;
         //private static ReferenceMultiplexer<IAssetProvider<ITexture2D>> LastTextures;
         private static SyncRefList<SpriteProvider> LastSprites;
@@ -438,7 +439,7 @@ namespace LogixVisualCustomizer
 
         private static void EnsureAssets(this World world)
         {
-            if (LastWorld != null && world.SessionId == LastWorld.SessionId) return;
+            if (LastWorld != null && world.SessionId == LastWorld.SessionId && LastSlot != null) return;
             LastWorld = world;
             var assets = LastWorld.GetCustomizerAssets();
             assets.UpdateLast();
@@ -451,6 +452,7 @@ namespace LogixVisualCustomizer
         }
         private static void UpdateLast(this Slot slot)
         {
+            LastSlot = slot;
             LastIdentifier = slot.GetComponent<ValueField<int>>();
             LastTextures = slot.GetComponent<ReferenceMultiplexer<IAssetProvider<ITexture2D>>>()?.References;
             LastSprites = slot.GetComponent<ReferenceMultiplexer<SpriteProvider>>()?.References;

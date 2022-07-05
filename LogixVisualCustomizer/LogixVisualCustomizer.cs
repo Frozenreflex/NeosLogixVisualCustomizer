@@ -179,7 +179,7 @@ namespace LogixVisualCustomizer
         public override string Author => "Banane9, Fro Zen";
         public override string Link => "https://github.com/Frozenreflex/NeosLogixVisualCustomizer";
         public override string Name => "LogixVisualCustomizer";
-        public override string Version => "1.0.1-1";
+        public override string Version => "1.1.0-1";
         internal static float4 BackgroundHorizontalSlices =>
             UseBackground ? Config.GetValue(BackgroundHorizontalSlicesKey) : DefaultSlices;
         internal static Uri BackgroundSpriteUri => UseBackground ? Config.GetValue(BackgroundSpriteUriKey) : null;
@@ -278,6 +278,7 @@ namespace LogixVisualCustomizer
 
             NeosPrimitiveTypes = traverse.Field<Type[]>("neosPrimitives").Value
                                     .Where(type => type.Name != "String")
+                                    .AddItem(typeof(Rect))
                                     .AddItem(typeof(dummy))
                                     .AddItem(typeof(object))
                                     .ToArray();
@@ -304,7 +305,7 @@ namespace LogixVisualCustomizer
             GenerateMethodTargets(methodName, (IEnumerable<Type>) baseTypes);
 
         public static IEnumerable<MethodBase> GenerateMethodTargets(string methodName, IEnumerable<Type> baseTypes) =>
-            baseTypes.Select(type => type.GetMethod(methodName, AccessTools.all)).Where(m => m != null);
+            baseTypes.Select(type => type.GetMethod(methodName, AccessTools.allDeclared)).Where(m => m != null);
 
         public override void OnEngineInit()
         {
@@ -318,7 +319,7 @@ namespace LogixVisualCustomizer
             EnumInputPatch.Patch(harmony);
         }
         
-        private void OnConfigurationChanged(ConfigurationChangedEvent changeEvent)
+        private static void OnConfigurationChanged(ConfigurationChangedEvent changeEvent)
         {
             if (!UriKeys.TryGetValue(changeEvent.Key, out var value)) return;
             if (!Uri.TryCreate((string) Config.GetValue(changeEvent.Key), UriKind.Absolute, out var uri)) uri = null;
