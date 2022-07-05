@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BaseX;
 using CloudX.Shared;
+using CodeX;
 using FrooxEngine;
 using FrooxEngine.LogiX.Input;
 using FrooxEngine.UIX;
@@ -269,6 +270,7 @@ namespace LogixVisualCustomizer
             NeosEnumTypes = AccessTools.GetTypesFromAssembly(typeof(EnumInput<>).Assembly)
                                 .Concat(AccessTools.GetTypesFromAssembly(typeof(float4).Assembly))
                                 .Concat(AccessTools.GetTypesFromAssembly(typeof(AudioDistanceSpace).Assembly))
+                                .Concat(AccessTools.GetTypesFromAssembly(typeof(WrapMode).Assembly))
                                 .Concat(AccessTools.GetTypesFromAssembly(typeof(SessionAccessLevel).Assembly))
                                 .Distinct()
                                 .Where(type => type.IsEnum && !type.IsNested)
