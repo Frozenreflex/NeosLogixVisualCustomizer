@@ -94,7 +94,7 @@ namespace LogixVisualCustomizer
 
         public static Slot GetCustomizerAssets(this World world)
         {
-            var user = world.LocalUser.UserID;
+            var user = world.LocalUser.UserID ?? "localuser";
             var hash = GetUserHash(user);
             var key = $"LogixCustomizerAssets_{hash}";
             
